@@ -12,4 +12,5 @@ class Collaborator(BaseModel):
     
     def save(self, *args, **kwargs):
         self.password = ph.hash(self.password)
+        self.identity.capitalize()
         super().save(*args, **kwargs)
