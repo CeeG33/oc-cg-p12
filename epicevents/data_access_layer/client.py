@@ -1,8 +1,8 @@
 from datetime import date
 from peewee import *
-from database import BaseModel
-from company import Company
-from collaborator import Collaborator
+from .database import BaseModel
+from .company import Company
+from .collaborator import Collaborator
 
 
 class Client(BaseModel):

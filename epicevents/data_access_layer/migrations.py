@@ -1,19 +1,23 @@
-from database import psql_db
-from department import Department
-from collaborator import Collaborator
+from .database import psql_db
+from .client import Client
+from .collaborator import Collaborator
+from .company import Company
+from .contract import Contract
+from .department import Department
+from .event import Event
 
 """Connecting to the database"""
 psql_db.connect()
 
 """Table creation"""
-psql_db.create_tables([Department, Collaborator])
+psql_db.create_tables([Client, Collaborator, Company, Contract, Department, Event])
 
-# Collaborator.create(
-#     identity="Ciran GÜRBÜZ",
-#     email="ciran@epicevents.com",
-#     password="Ceegee",
-#     department=1
-# )
+Collaborator.create(
+    identity="Admin",
+    email="admin@epicevents.com",
+    password="admin",
+    department=1
+)
 
 # Collaborator.delete_by_id(6)
 

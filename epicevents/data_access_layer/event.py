@@ -1,7 +1,7 @@
 from peewee import *
-from database import BaseModel
-from contract import Contract
-from collaborator import Collaborator
+from .database import BaseModel
+from .contract import Contract
+from .collaborator import Collaborator
 
 
 class Event(BaseModel):

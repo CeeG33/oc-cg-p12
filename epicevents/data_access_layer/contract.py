@@ -1,9 +1,9 @@
 from datetime import date
 from peewee import *
-from database import BaseModel
-from client import Client
-from collaborator import Collaborator
-from department import Department
+from .database import BaseModel
+from .client import Client
+from .collaborator import Collaborator
+from .department import Department
 
 
 class Contract(BaseModel):
