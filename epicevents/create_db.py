@@ -12,16 +12,16 @@ psql_db.connect()
 """Table creation"""
 psql_db.create_tables([Client, Collaborator, Company, Contract, Department, Event])
 
-Department.create(name="Management")
-Department.create(name="Sales")
-Department.create(name="Support")
+# Department.create(name="Management")
+# Department.create(name="Sales")
+# Department.create(name="Support")
 
-Collaborator.create(
-    identity="Admin",
-    email="admin@epicevents.com",
-    password="admin",
-    department=1
-)
+# Collaborator.create(
+#     identity="Admin Test",
+#     email="admin@epicevents.com",
+#     password="admin",
+#     department=1
+# )
 
 # Collaborator.delete_by_id(6)
 
