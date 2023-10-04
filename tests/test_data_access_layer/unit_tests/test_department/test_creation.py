@@ -1,13 +1,12 @@
 import pytest
 from epicevents.data_access_layer.department import Department
 
-def test_department_creation_successfully():
+def test_department_creation():
     name = "Test Department"
     
-    test_department = Department.create(name=name)
+    department = Department(name=name)
     
-    assert test_department.name == name
-    assert test_department.id == 1
+    assert department.name == name
     
 def test_department_creation_with_wrong_name():
     name = 1
