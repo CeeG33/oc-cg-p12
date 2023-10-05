@@ -13,7 +13,7 @@ class Client(BaseModel):
     email = CharField(max_length=50, unique=True, null=True)
     phone = CharField(max_length=20, unique=True)
     company = ForeignKeyField(Company, backref="company")
-    creation_date = DateField()
+    creation_date = DateField(default=datetime.now().date)
     last_update = DateField(null=True)
     collaborator = ForeignKeyField(Collaborator, backref="associated_sales")
     

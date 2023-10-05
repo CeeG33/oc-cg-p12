@@ -8,17 +8,13 @@ def test_client_creation():
     email = "test@client.fr"
     phone = "0654987852"
     company = 1
-    creation_date = date.today()
-    last_update = None
-    collaborator = 2
+    collaborator = 1
     
     client = Client(
         identity=identity,
         email=email,
         phone=phone,
         company=company,
-        creation_date=creation_date,
-        last_update=last_update,
         collaborator=collaborator
     )
     
@@ -26,8 +22,7 @@ def test_client_creation():
     assert client.email == email
     assert client.phone == phone
     assert client.company.id == company
-    assert client.creation_date == creation_date
-    assert client.last_update == last_update
+    assert client.creation_date == datetime.now().date()
     assert client.collaborator.id == collaborator
     
 def test_client_creation_with_wrong_identity():
