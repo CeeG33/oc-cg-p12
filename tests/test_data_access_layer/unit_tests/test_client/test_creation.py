@@ -1,7 +1,5 @@
-
 import pytest
 from datetime import datetime, timedelta, date
-print(str(datetime.now().date()))
 from peewee import IntegrityError, DataError, DoesNotExist
 from epicevents.data_access_layer.client import Client
 
