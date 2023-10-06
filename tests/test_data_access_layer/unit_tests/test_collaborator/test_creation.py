@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime, timedelta
 from peewee import IntegrityError
+from argon2 import PasswordHasher
 from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.data_access_layer.department import Department
 
@@ -20,6 +21,7 @@ def test_collaborator_creation(fake_department):
     assert collaborator.identity == identity
     assert collaborator.email == email
     assert collaborator.department.id == department.id
+    assert collaborator.password != password
     
 def test_collaborator_creation_with_wrong_identity(fake_department):
     identity = "56465565"
