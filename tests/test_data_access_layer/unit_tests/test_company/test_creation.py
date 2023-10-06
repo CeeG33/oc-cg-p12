@@ -4,7 +4,7 @@ from epicevents.data_access_layer.company import Company
 def test_company_creation():
     name = "Test company"
     
-    company = Company(name=name)
+    company = Company.create(name=name)
     
     assert company.name == name
     

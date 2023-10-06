@@ -32,3 +32,30 @@ def fake_department():
     yield fake_department
     
     cleanup()
+    
+@pytest.fixture()
+def fake_company():
+    fake_company = company.Company.create(name="Total")
+    
+    def cleanup():
+        fake_company.delete_instance()
+    
+    yield fake_company
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_collaborator():
+    collaborator_department = department.Department.create(name="Développement")
+    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+                                                         email="test@company.fr",
+                                                         password="testpass",
+                                                         department=collaborator_department)
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+        collaborator_department.delete_instance()
+    
+    yield fake_collaborator
+    
+    cleanup()

@@ -1,16 +1,18 @@
+
 import pytest
 from datetime import datetime, timedelta, date
-from peewee import IntegrityError, DataError
+print(str(datetime.now().date()))
+from peewee import IntegrityError, DataError, DoesNotExist
 from epicevents.data_access_layer.client import Client
 
-def test_client_creation():
+def test_client_creation(fake_company, fake_collaborator):
     identity = "Client Test"
     email = "test@client.fr"
     phone = "0654987852"
-    company = 1
-    collaborator = 1
+    company = fake_company
+    collaborator = fake_collaborator
     
-    client = Client(
+    client = Client.create(
         identity=identity,
         email=email,
         phone=phone,
@@ -21,18 +23,20 @@ def test_client_creation():
     assert client.identity == identity
     assert client.email == email
     assert client.phone == phone
-    assert client.company.id == company
+    assert client.company.id == company.id
     assert client.creation_date == datetime.now().date()
-    assert client.collaborator.id == collaborator
+    assert client.collaborator.id == collaborator.id
     
-def test_client_creation_with_wrong_identity():
+    client.delete_instance()
+    
+def test_client_creation_with_wrong_identity(fake_company, fake_collaborator):
     identity = "465456"
     email = "test@client.fr"
     phone = "0654987852"
-    company = 1
-    creation_date = date.today()
+    company = fake_company
+    creation_date = datetime.now().date()
     last_update = None
-    collaborator = 2
+    collaborator = fake_collaborator
     
     with pytest.raises(ValueError):
         Client.create(
@@ -45,14 +49,15 @@ def test_client_creation_with_wrong_identity():
         collaborator=collaborator
         )
     
-def test_client_creation_with_wrong_email():
+    
+def test_client_creation_with_wrong_email(fake_company, fake_collaborator):
     identity = "Client Test"
     email = "5465465"
     phone = "0654987852"
-    company = 1
-    creation_date = date.today()
+    company = fake_company
+    creation_date = datetime.now().date()
     last_update = None
-    collaborator = 2
+    collaborator = fake_collaborator
     
     with pytest.raises(ValueError):
         Client.create(
@@ -65,16 +70,16 @@ def test_client_creation_with_wrong_email():
         collaborator=collaborator
         )
 
-def test_client_creation_with_wrong_company_id():
+def test_client_creation_with_wrong_company_id(fake_collaborator):
     identity = "Client Test"
     email = "test@client.fr"
     phone = "0654987852"
     company = "Error"
-    creation_date = date.today()
+    creation_date = datetime.now().date()
     last_update = None
-    collaborator = 2
+    collaborator = fake_collaborator
     
-    with pytest.raises(DataError):
+    with pytest.raises(DoesNotExist):
         Client.create(
         identity=identity,
         email=email,
@@ -85,16 +90,16 @@ def test_client_creation_with_wrong_company_id():
         collaborator=collaborator
         )
 
-def test_client_creation_with_wrong_creation_date():
+def test_client_creation_with_wrong_creation_date(fake_company, fake_collaborator):
     identity = "Client Test"
     email = "test@client.fr"
     phone = "0654987852"
-    company = 1
+    company = fake_company
     creation_date = "Error"
     last_update = None
-    collaborator = 2
+    collaborator = fake_collaborator
     
-    with pytest.raises(DataError):
+    with pytest.raises(ValueError):
         Client.create(
         identity=identity,
         email=email,
@@ -105,16 +110,16 @@ def test_client_creation_with_wrong_creation_date():
         collaborator=collaborator
         )
 
-def test_client_creation_with_wrong_collaborator_id():
+def test_client_creation_with_wrong_collaborator_id(fake_company):
     identity = "Client Test"
     email = "test@client.fr"
     phone = "0654987852"
-    company = 1
-    creation_date = date.today()
+    company = fake_company
+    creation_date = datetime.now().date()
     last_update = None
     collaborator = "Wrong"
     
-    with pytest.raises(DataError):
+    with pytest.raises(DoesNotExist):
         Client.create(
         identity=identity,
         email=email,

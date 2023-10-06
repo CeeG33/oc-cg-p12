@@ -5,23 +5,26 @@ from .database import BaseModel
 from .company import Company
 from .collaborator import Collaborator
 
-def _get_date():
-    return date.today()
 
 class Client(BaseModel):
     identity = CharField(max_length=50, unique=True)
     email = CharField(max_length=50, unique=True, null=True)
     phone = CharField(max_length=20, unique=True)
     company = ForeignKeyField(Company, backref="company")
-    creation_date = DateField(default=datetime.now().date)
-    last_update = DateField(null=True)
+    creation_date = DateTimeField(default=datetime.now().date)
+    last_update = DateTimeField(null=True)
     collaborator = ForeignKeyField(Collaborator, backref="associated_sales")
     
     def save(self, *args, **kwargs):
         if not self.identity:
             raise ValueError("Erreur : Vous n'avez pas renseigné les détails du client.")
+        if not isinstance(self.collaborator.id, int):
+            raise ValueError("Erreur : Veuillez entrer un identifiant de collaborateur valide.")
+        if not isinstance(self.company.id, int):
+            raise ValueError("Erreur : Veuillez entrer un identifiant d'entreprise valide.")
         self._validate_identity()
         self._validate_email()
+        self._validate_date()
         self.identity.capitalize()
         super().save(*args, **kwargs)
         
@@ -35,12 +38,12 @@ class Client(BaseModel):
         if not re.match(pattern, self.email):
             raise ValueError("Erreur : Veuillez entrer un email valide (Exemple : alain.terieur@epicevents.com)")
         
-    # def get_data(self):
-    #     client_data = {
-    #         "client_id" : f"{self.id}",
-    #         "email": f"{self.email}",
-    #         "company_id": f"{self.company}",
-    #         "collaborator_id": f"{self.collaborator}",
-    #     }
-    
-    #     return client_data
+    def _validate_date(self):
+        pattern = r'^\d{4}-\d{2}-\d{2}$'
+        if not re.match(pattern, str(self.creation_date)):
+            raise ValueError("Erreur : Veuillez entrer une date valide (Exemple : 2023-05-23)")
+        
+        if self.last_update:
+            if not re.match(pattern, str(self.last_update)):
+                raise ValueError("Erreur : Veuillez entrer une date valide (Exemple : 2023-05-23)")
+        
