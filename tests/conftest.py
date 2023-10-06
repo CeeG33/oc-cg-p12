@@ -59,3 +59,27 @@ def fake_collaborator():
     yield fake_collaborator
     
     cleanup()
+    
+@pytest.fixture()
+def fake_client():
+    collaborator_department = department.Department.create(name="Bâteau")
+    client_company = company.Company.create(name="Thalès")
+    salesman = collaborator.Collaborator.create(identity="Patrick Etoile",
+                                                email="patrick@etoile.fr",
+                                                password="etoile",
+                                                department=collaborator_department)
+    fake_client = client.Client.create(identity="Bernard Hermite",
+                                       email="bernard@lamer.fr",
+                                       phone="0654978959",
+                                       company=client_company,
+                                       collaborator=salesman)
+    
+    def cleanup():
+        fake_client.delete_instance()
+        collaborator_department.delete_instance()
+        client_company.delete_instance()
+        salesman.delete_instance()
+    
+    yield fake_client
+    
+    cleanup()

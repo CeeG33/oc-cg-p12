@@ -4,39 +4,27 @@ from peewee import IntegrityError, DataError, DoesNotExist
 from epicevents.data_access_layer.contract import Contract
 
 
-def test_contract_creation():
-    client = 2
-    collaborator = 1
+def test_contract_creation(fake_client, fake_collaborator):
+    client = fake_client
+    collaborator = fake_collaborator
     total_sum = 15399
     
-    contract = Contract(
+    contract = Contract.create(
         client=client,
         collaborator =collaborator,
         total_sum=total_sum,
     )
     
-    assert contract.client.id == client
-    assert contract.collaborator.id == collaborator
-    assert contract.total_sum == total_sum
+    assert contract.client.id == client.id
+    assert contract.collaborator.id == collaborator.id
+    assert contract.total_sum == Contract()._format_number(total_sum)
     assert contract.amount_due == None
     assert contract.creation_date == datetime.now().date()
     assert contract.signed == False
     
-def test_contract_creation_with_wrong_client_field():
+def test_contract_creation_with_wrong_client_field(fake_collaborator):
     client = "Wrong"
-    collaborator = 1
-    total_sum = 15399
-    
-    with pytest.raises(DataError):
-        Contract.create(
-        client=client,
-        collaborator =collaborator,
-        total_sum=total_sum,
-    )
-    
-def test_contract_creation_with_wrong_client_id():
-    client = -12
-    collaborator = 1
+    collaborator = fake_collaborator
     total_sum = 15399
     
     with pytest.raises(DoesNotExist):
@@ -46,37 +34,49 @@ def test_contract_creation_with_wrong_client_id():
         total_sum=total_sum,
     )
     
-def test_contract_creation_with_wrong_collaborator():
-    client = 2
+def test_contract_creation_with_wrong_client_id(fake_collaborator):
+    client = -12
+    collaborator = fake_collaborator
+    total_sum = 15399
+    
+    with pytest.raises(DoesNotExist):
+        Contract.create(
+        client=client,
+        collaborator =collaborator,
+        total_sum=total_sum,
+    )
+    
+def test_contract_creation_with_wrong_collaborator(fake_client):
+    client = fake_client
     collaborator = "Wrong"
     total_sum = 15399
     
-    with pytest.raises(DataError):
+    with pytest.raises(DoesNotExist):
         Contract.create(
         client=client,
         collaborator =collaborator,
         total_sum=total_sum,
     )
 
-def test_contract_creation_with_wrong_total_sum():
-    client = 2
-    collaborator = 1
+def test_contract_creation_with_wrong_total_sum(fake_client, fake_collaborator):
+    client = fake_client
+    collaborator = fake_collaborator
     total_sum = "Wrong"
     
-    with pytest.raises(DataError):
+    with pytest.raises(ValueError):
         Contract.create(
         client=client,
         collaborator =collaborator,
         total_sum=total_sum,
     )
         
-def test_contract_creation_with_wrong_amount_due():
-    client = 2
-    collaborator = 1
+def test_contract_creation_with_wrong_amount_due(fake_client, fake_collaborator):
+    client = fake_client
+    collaborator = fake_collaborator
     total_sum = 15399
     amount_due = "Wrong"
     
-    with pytest.raises(DataError):
+    with pytest.raises(ValueError):
         Contract.create(
         client=client,
         collaborator =collaborator,
@@ -84,13 +84,13 @@ def test_contract_creation_with_wrong_amount_due():
         amount_due=amount_due,
     )
 
-def test_contract_creation_with_wrong_creation_date():
-    client = 2
-    collaborator = 1
+def test_contract_creation_with_wrong_creation_date(fake_client, fake_collaborator):
+    client = fake_client
+    collaborator = fake_collaborator
     total_sum = 15399
     creation_date = "Wrong"
     
-    with pytest.raises(DataError):
+    with pytest.raises(ValueError):
         Contract.create(
         client=client,
         collaborator =collaborator,
@@ -98,9 +98,9 @@ def test_contract_creation_with_wrong_creation_date():
         creation_date=creation_date
     )
 
-def test_contract_creation_with_wrong_signed_field():
-    client = 2
-    collaborator = 1
+def test_contract_creation_with_wrong_signed_field(fake_client, fake_collaborator):
+    client = fake_client
+    collaborator = fake_collaborator
     total_sum = 15399
     signed = "Wrong"
     
