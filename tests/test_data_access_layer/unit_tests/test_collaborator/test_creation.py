@@ -2,14 +2,15 @@ import pytest
 from datetime import datetime, timedelta
 from peewee import IntegrityError
 from epicevents.data_access_layer.collaborator import Collaborator
+from epicevents.data_access_layer.department import Department
 
-def test_collaborator_creation():
+def test_collaborator_creation(fake_department):
     identity = "Utilisateur Test"
     email = "test@epicevents.com"
     password = "password"
-    department = 1
+    department = fake_department
     
-    collaborator = Collaborator(
+    collaborator = Collaborator.create(
         identity=identity, 
         email=email, 
         password=password, 
@@ -18,13 +19,13 @@ def test_collaborator_creation():
     
     assert collaborator.identity == identity
     assert collaborator.email == email
-    assert collaborator.department.id == department
+    assert collaborator.department.id == department.id
     
-def test_collaborator_creation_with_wrong_identity():
+def test_collaborator_creation_with_wrong_identity(fake_department):
     identity = "56465565"
     email = "test@epicevents.com"
     password = "password"
-    department = 1
+    department = fake_department
     
     with pytest.raises(ValueError):
         Collaborator.create(
@@ -34,11 +35,11 @@ def test_collaborator_creation_with_wrong_identity():
             department=department
         )
     
-def test_collaborator_creation_with_wrong_email():
+def test_collaborator_creation_with_wrong_email(fake_department):
     identity = "Utilisateur Test"
     email = "56465565"
     password = "password"
-    department = 1
+    department = fake_department
     
     with pytest.raises(ValueError):
         Collaborator.create(
@@ -66,13 +67,13 @@ def test_collaborator_creation_with_missing_attribute():
     with pytest.raises(ValueError):
         Collaborator.create()
 
-def test_collaborator_get_data():
-    identity = "Utilisateur Test"
-    email = "test@epicevents.com"
+def test_collaborator_get_data(fake_department):
+    identity = "Utilisateur Testtest"
+    email = "testing@epicevents.com"
     password = "password"
-    department = 1
+    department = fake_department
     
-    collaborator = Collaborator(
+    collaborator = Collaborator.create(
         identity=identity, 
         email=email, 
         password=password, 
