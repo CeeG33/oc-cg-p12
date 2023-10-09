@@ -19,10 +19,10 @@ class Event(BaseModel):
         if not self.contract and self.start_date and self.end_date and self.location:
             raise ValueError("Erreur : Veuillez renseigner les détails de l'évènement.")
         
-        if not isinstance(self.contract.id, int):
+        if not isinstance(self.contract, int) and self.contract.id <= 0:
             raise ValueError("Erreur : Veuillez entrer un identifiant de contrat valide.")
         
-        if not isinstance(self.support.id, int):
+        if not isinstance(self.support, int) and self.support.id <= 0:
             raise ValueError("Erreur : Veuillez entrer un identifiant de collaborateur valide.")
         
         self._validate_date()
@@ -33,7 +33,7 @@ class Event(BaseModel):
     def _validate_date(self):
         pattern = r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$'
         if self.start_date and self.end_date:
-            if not re.match(pattern, str(self.creation_date)):
+            if not re.match(pattern, str(self.start_date)):
                 raise ValueError("Erreur : Veuillez entrer une date et une heure valides (Exemple : 2023-02-05 20:30)")
         else:
             raise ValueError("Erreur : Vous n'avez pas fourni de date de début. Veuillez entrer une date et une heure valides (Exemple : 2023-02-05 20:30)")

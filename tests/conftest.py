@@ -99,8 +99,8 @@ def fake_contract():
                                        company=client_company,
                                        collaborator=salesman)
     fake_contract = contract.Contract.create(client=fake_client,
-                                             collaborator=fake_collaborator,
-                                             total_sum="15000")
+                                             collaborator=salesman,
+                                             total_sum=15000)
     
     def cleanup():
         fake_contract.delete_instance()
