@@ -25,6 +25,9 @@ class Event(BaseModel):
         if not isinstance(self.support, int) and self.support.id <= 0:
             raise ValueError("Erreur : Veuillez entrer un identifiant de collaborateur valide.")
         
+        if not isinstance(self.attendees, int) or int(self.attendees) <= 1:
+            raise ValueError("Erreur : Veuillez entrer un nombre de participant supérieur à 1.")
+        
         self._validate_date()
         
         super().save(*args, **kwargs)
@@ -33,7 +36,7 @@ class Event(BaseModel):
     def _validate_date(self):
         pattern = r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$'
         if self.start_date and self.end_date:
-            if not re.match(pattern, str(self.start_date)):
+            if not re.match(pattern, str(self.start_date)) or not re.match(pattern, str(self.end_date)):
                 raise ValueError("Erreur : Veuillez entrer une date et une heure valides (Exemple : 2023-02-05 20:30)")
         else:
             raise ValueError("Erreur : Vous n'avez pas fourni de date de début. Veuillez entrer une date et une heure valides (Exemple : 2023-02-05 20:30)")

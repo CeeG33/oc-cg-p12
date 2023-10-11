@@ -111,17 +111,16 @@ def test_event_creation_with_wrong_collaborator_id(fake_contract):
         support=support,
     )
 
-# REPRENDRE ICII
-def test_event_creation_with_wrong_total_sum(fake_contract, fake_collaborator):
+def test_event_creation_with_wrong_start_date(fake_contract, fake_collaborator):
     contract = fake_contract
-    start_date = "2023-02-05 14:30"
+    start_date = "Wrong"
     end_date = "2023-02-05 20:30"
     location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
     attendees = 8
     notes = "Quelques notes..."
     support = fake_collaborator
     
-    with pytest.raises(DoesNotExist):
+    with pytest.raises(ValueError):
         Event.create(
         contract=contract,
         start_date=start_date,
@@ -132,50 +131,143 @@ def test_event_creation_with_wrong_total_sum(fake_contract, fake_collaborator):
         support=support,
     )
 
-def test_event_creation_with_wrong_amount_due(fake_client, fake_collaborator):
-    client = fake_client
-    collaborator = fake_collaborator
-    total_sum = 15399
-    amount_due = "Wrong"
+def test_event_creation_with_wrong_end_date(fake_contract, fake_collaborator):
+    contract = fake_contract
+    start_date = "2023-02-05 20:30"
+    end_date = "Wrong"
+    location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+    attendees = 8
+    notes = "Quelques notes..."
+    support = fake_collaborator
     
     with pytest.raises(ValueError):
         Event.create(
-        client=client,
-        collaborator =collaborator,
-        total_sum=total_sum,
-        amount_due=amount_due,
+        contract=contract,
+        start_date=start_date,
+        end_date=end_date,
+        location=location,
+        attendees=attendees,
+        notes=notes,
+        support=support,
     )
 
-def test_event_creation_with_wrong_creation_date(fake_client, fake_collaborator):
-    client = fake_client
-    collaborator = fake_collaborator
-    total_sum = 15399
-    creation_date = "Wrong"
+def test_event_creation_with_no_start_date(fake_contract, fake_collaborator):
+    contract = fake_contract
+    end_date = "Wrong"
+    location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+    attendees = 8
+    notes = "Quelques notes..."
+    support = fake_collaborator
     
     with pytest.raises(ValueError):
         Event.create(
-        client=client,
-        collaborator =collaborator,
-        total_sum=total_sum,
-        creation_date=creation_date
+        contract=contract,
+        end_date=end_date,
+        location=location,
+        attendees=attendees,
+        notes=notes,
+        support=support,
     )
 
-def test_event_creation_with_wrong_signed_field(fake_client, fake_collaborator):
-    client = fake_client
-    collaborator = fake_collaborator
-    total_sum = 15399
-    signed = "Wrong"
+def test_event_creation_with_no_end_date(fake_contract, fake_collaborator):
+    contract = fake_contract
+    start_date = "2023-02-05 20:30"
+    location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+    attendees = 8
+    notes = "Quelques notes..."
+    support = fake_collaborator
     
     with pytest.raises(ValueError):
         Event.create(
-        client=client,
-        collaborator =collaborator,
-        total_sum=total_sum,
-        signed=signed
+        contract=contract,
+        start_date=start_date,
+        location=location,
+        attendees=attendees,
+        notes=notes,
+        support=support,
     )
 
-def test_collaborator_creation_with_missing_attribute():
+def test_event_creation_with_no_location(fake_contract, fake_collaborator):
+    contract = fake_contract
+    start_date = "2023-02-05 14:30"
+    end_date = "2023-02-05 20:30"
+    attendees = 8
+    notes = "Quelques notes..."
+    support = fake_collaborator
+    
+    with pytest.raises(IntegrityError):
+        Event.create(
+        contract=contract,
+        start_date=start_date,
+        end_date=end_date,
+        attendees=attendees,
+        notes=notes,
+        support=support,
+    )
+
+def test_event_creation_with_wrong_attendees_value(fake_contract, fake_collaborator):
+    contract = fake_contract
+    start_date = "2023-02-05 14:30"
+    end_date = "2023-02-05 20:30"
+    location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+    attendees = "Wrong"
+    notes = "Quelques notes..."
+    support = fake_collaborator
+    
+    with pytest.raises(ValueError):
+        Event.create(
+        contract=contract,
+        start_date=start_date,
+        end_date=end_date,
+        location=location,
+        attendees=attendees,
+        notes=notes,
+        support=support,
+    )
+
+def test_event_creation_with_negative_attendees_value(fake_contract, fake_collaborator):
+    contract = fake_contract
+    start_date = "2023-02-05 14:30"
+    end_date = "2023-02-05 20:30"
+    location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+    attendees = -1
+    notes = "Quelques notes..."
+    support = fake_collaborator
+    
+    with pytest.raises(ValueError):
+        Event.create(
+        contract=contract,
+        start_date=start_date,
+        end_date=end_date,
+        location=location,
+        attendees=attendees,
+        notes=notes,
+        support=support,
+    )
+
+###CHECKKK
+# def test_event_creation_with_number_instead_of_location(fake_contract, fake_collaborator):
+#     contract = fake_contract
+#     start_date = "2023-02-05 14:30"
+#     end_date = "2023-02-05 20:30"
+#     location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+#     attendees = 8
+#     notes = "Quelques notes..."
+#     support = fake_collaborator
+    
+#     with pytest.raises(ValueError):
+#         Event.create(
+#         contract=contract,
+#         start_date=start_date,
+#         end_date=end_date,
+#         location=location,
+#         attendees=attendees,
+#         notes=notes,
+#         support=support,
+#     )
+
+def test_event_creation_with_missing_attribute():
     with pytest.raises(DoesNotExist):
         Event.create()
-        
+
 
