@@ -15,18 +15,13 @@ MANAGEMENT_DEPARTMENT_ID = 1
 app = typer.Typer()
 
 ph = PasswordHasher()
-# Décorateur qui va ouvrir le fichier et vérifier que TOKEN existe bien
-# Groupe / autorisations : vérifie que l'user fait partie du groupe pour être autorisé à faire telle action.
-# Restructuration CLI
-# Mémorisation token
-# Lecture token
 
 def _generate_token(collaborator):
     token = jwt.encode(collaborator.get_data(), key=SECRET_KEY, algorithm="HS256")
     return token
 
 def _memorize_token(token):
-    set_key(dotenv_file, "TOKEN", token)
+    os.environ["TOKEN"] = token
 
 def _read_token():
     return os.environ["TOKEN"]
@@ -35,11 +30,11 @@ def _verify_token():
     try:
         decoded_payload = jwt.decode(_read_token(), key=SECRET_KEY, algorithms=["HS256"])
     except ExpiredSignatureError:
-        typer.echo(f"Token expiré, veuillez vous réauthentifier.")
+        raise ExpiredSignatureError("Token expiré, veuillez vous réauthentifier.")
     
     collaborator_id = decoded_payload.get("collaborator_id")
     
-    if collaborator_id is None:
+    if collaborator_id is None or not isinstance(int(collaborator_id), int):
         raise InvalidTokenError("Le token n'est pas valide, veuillez vous réauthentifier.")
     
     return True, decoded_payload

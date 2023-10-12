@@ -36,7 +36,7 @@ class Collaborator(BaseModel):
             "collaborator_id" : f"{self.id}",
             "email": f"{self.email}",
             "department_id": f"{self.department}",
-            "exp": datetime.now() + timedelta(hours=1) 
+            "exp": datetime.utcnow() + timedelta(hours=1)
         }
     
         return collaborator_data

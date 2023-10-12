@@ -1,9 +1,11 @@
-import pytest
-import os
+import pytest, os, jwt
+from datetime import datetime, timedelta
 from peewee import PostgresqlDatabase, SqliteDatabase
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from epicevents.data_access_layer import client, collaborator, company, contract, department, event
 from epicevents.data_access_layer import database
+from epicevents.cli import collaborator as clicollaborator
+from epicevents.cli.collaborator import SECRET_KEY
 
 MODELS = [client.Client,
           collaborator.Collaborator,
@@ -16,6 +18,8 @@ test_db = SqliteDatabase(":memory:")
 test_db.bind(MODELS, bind_refs=False, bind_backrefs=False)
 test_db.connect()
 test_db.create_tables(MODELS)
+
+
 
 @pytest.fixture(autouse=True)
 def test_database(monkeypatch):
@@ -112,3 +116,100 @@ def fake_contract():
     yield fake_contract
     
     cleanup()
+    
+@pytest.fixture()
+def valid_token():
+    collaborator_department = department.Department.create(name="Développement")
+    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+                                                         email="test@company.fr",
+                                                         password="testpass",
+                                                         department=collaborator_department)
+    fake_token = jwt.encode(fake_collaborator.get_data(), key=SECRET_KEY, algorithm="HS256")
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+        collaborator_department.delete_instance()
+    
+    yield fake_token
+    
+    cleanup()
+    
+@pytest.fixture()
+def expired_token():
+    collaborator_department = department.Department.create(name="Développement")
+    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+                                                         email="test@company.fr",
+                                                         password="testpass",
+                                                         department=collaborator_department)
+    payload = {
+        "collaborator_id" : f"{fake_collaborator.id}",
+        "email": f"{fake_collaborator.email}",
+        "department_id": f"{fake_collaborator.department}",
+        "exp": datetime.utcnow() - timedelta(hours=1)
+    }
+    
+    fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+        collaborator_department.delete_instance()
+    
+    yield fake_token
+    
+    cleanup()
+
+@pytest.fixture()
+def wrong_token():
+    collaborator_department = department.Department.create(name="Développement")
+    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+                                                         email="test@company.fr",
+                                                         password="testpass",
+                                                         department=collaborator_department)
+    payload = {
+        "collaborator_id" : None,
+        "email": f"{fake_collaborator.email}",
+        "department_id": f"{fake_collaborator.department}",
+        "exp": datetime.utcnow() - timedelta(hours=1)
+    }
+    
+    fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+        collaborator_department.delete_instance()
+    
+    yield fake_token
+    
+    cleanup()
+
+@pytest.fixture()
+def wrong_token_str():
+    collaborator_department = department.Department.create(name="Développement")
+    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+                                                         email="test@company.fr",
+                                                         password="testpass",
+                                                         department=collaborator_department)
+    payload = {
+        "collaborator_id" : "Wrong",
+        "email": f"{fake_collaborator.email}",
+        "department_id": f"{fake_collaborator.department}",
+        "exp": datetime.utcnow() - timedelta(hours=1)
+    }
+    
+    fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+        collaborator_department.delete_instance()
+    
+    yield fake_token
+    
+    cleanup()
+
+@pytest.fixture()
+def monkey_dotenv(monkeypatch):
+    dotenv_file = load_dotenv("test.env")
+    
+    monkeypatch.setattr(clicollaborator, "dotenv_file", dotenv_file)
+    
+    return dotenv_file

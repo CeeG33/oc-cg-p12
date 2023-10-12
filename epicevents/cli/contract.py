@@ -7,7 +7,7 @@ app = typer.Typer()
 
 
 @app.command()
-def show_all_contracts():
+def list():
     if _verify_token():
         
         queryset = Contract.select()
