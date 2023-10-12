@@ -1,6 +1,4 @@
-import pytest, jwt, os
-from dotenv import load_dotenv, find_dotenv
-from epicevents.cli import collaborator
+import pytest, os
 from epicevents.cli.collaborator import _memorize_token
 
 

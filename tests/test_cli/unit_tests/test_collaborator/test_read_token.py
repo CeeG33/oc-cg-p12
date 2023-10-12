@@ -1,5 +1,4 @@
-import pytest, jwt, os
-from epicevents.cli import collaborator
+import pytest, os
 from epicevents.cli.collaborator import _read_token
 
 def test_read_token(monkey_dotenv):

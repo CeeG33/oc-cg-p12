@@ -86,7 +86,7 @@ def test_collaborator_get_data(fake_department):
             "collaborator_id" : f"{collaborator.id}",
             "email": f"{collaborator.email}",
             "department_id": f"{collaborator.department}",
-            "exp": datetime.now() + timedelta(hours=1) 
+            "exp": datetime.utcnow() + timedelta(hours=1) 
         }
     
     assert collaborator.get_data() == expected_result

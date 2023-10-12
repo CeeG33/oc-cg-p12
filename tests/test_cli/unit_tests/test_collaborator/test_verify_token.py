@@ -1,7 +1,5 @@
 import pytest, jwt
-from dotenv import set_key
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
-from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.cli import collaborator
 from epicevents.cli.collaborator import _verify_token, _memorize_token
 

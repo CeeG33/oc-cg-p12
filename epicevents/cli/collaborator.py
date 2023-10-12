@@ -1,6 +1,7 @@
 import os, jwt, typer
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv, find_dotenv, set_key
 from epicevents.data_access_layer.collaborator import Collaborator
 
@@ -42,14 +43,19 @@ def _verify_token():
 
 @app.command()
 def login(email: str, password: str):
-    collaborator = Collaborator.get_or_none(email=email)
-    password_check = ph.verify(collaborator.password, password)
+    collaborator = Collaborator.get_or_none(Collaborator.email == email)
     
+    if collaborator:
+        if hasattr(collaborator, "password"):
+            try:
+                password_check = ph.verify(collaborator.password, password)
+            except VerifyMismatchError:
+                typer.echo("Nom d'utilisateur ou mot de passe incorrect.")
+                raise typer.Exit(code=1)
+        
     if not collaborator:
         typer.echo("Nom d'utilisateur ou mot de passe incorrect.")
-    
-    if not password_check:
-        typer.echo("Nom d'utilisateur ou mot de passe incorrect.")
+        raise typer.Exit(code=1)
         
     typer.echo("Authentification réussie.")
     token = _generate_token(collaborator)
@@ -57,7 +63,7 @@ def login(email: str, password: str):
 
 
 @app.command()
-def show_all_collaborators():
+def list():
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check.get("department_id")
@@ -77,7 +83,7 @@ def show_all_collaborators():
 
 
 @app.command()
-def create_collaborator(identity: str, email: str, password: str, department: int):
+def create(identity: str, email: str, password: str, department: int):
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check.get("department_id")

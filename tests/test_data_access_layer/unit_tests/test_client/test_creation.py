@@ -1,6 +1,6 @@
 import pytest
-from datetime import datetime, timedelta, date
-from peewee import IntegrityError, DataError, DoesNotExist
+from datetime import datetime
+from peewee import DoesNotExist
 from epicevents.data_access_layer.client import Client
 
 def test_client_creation(fake_company, fake_collaborator):
