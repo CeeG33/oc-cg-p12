@@ -65,23 +65,28 @@ def login(email: str, password: str):
 @app.command()
 def list():
     token_check = _verify_token()
+
     if token_check:
-        collaborator_department = token_check.get("department_id")
+        collaborator_department = token_check[1]["department_id"]
         
-        if collaborator_department == MANAGEMENT_DEPARTMENT_ID:
+        if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             queryset = Collaborator.select()
             
             for user in queryset:
-                if queryset.len() == 0:
+                if len(Collaborator) == 0:
                     typer.echo("La base de donnée ne contient aucun collaborateur.")
                 
                 typer.echo(f"[ID] : {user.id} -- [Identité] : {user.identity} -- [Email] : {user.email} -- [Departement] : {user.department.name}")
         
         typer.echo("Action restreinte.")
     
-    typer.echo("Veuillez vous authentifier.")
+    typer.echo("Veuillez vous authentifier et réessayer.")
 
-
+##
+##
+## CONTINUE TESTS HERE
+##
+##
 @app.command()
 def create(identity: str, email: str, password: str, department: int):
     token_check = _verify_token()

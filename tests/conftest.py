@@ -205,6 +205,30 @@ def wrong_token_str():
     yield fake_token
     
     cleanup()
+    
+@pytest.fixture()
+def wrong_department_token():
+    collaborator_department = department.Department.create(name="Développement")
+    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+                                                         email="test@company.fr",
+                                                         password="testpass",
+                                                         department=collaborator_department)
+    payload = {
+        "collaborator_id" : f"{fake_collaborator.id}",
+        "email": f"{fake_collaborator.email}",
+        "department_id": "2",
+        "exp": datetime.utcnow() + timedelta(hours=1)
+    }
+    
+    fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+        collaborator_department.delete_instance()
+    
+    yield fake_token
+    
+    cleanup()
 
 @pytest.fixture()
 def monkey_dotenv(monkeypatch):
