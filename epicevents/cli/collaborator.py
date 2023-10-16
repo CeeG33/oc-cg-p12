@@ -70,7 +70,7 @@ def list():
         collaborator_department = token_check[1]["department_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
-            queryset = Collaborator.select()
+            queryset = Collaborator.select() 
             
             for user in queryset:
                 if len(Collaborator) == 0:
@@ -78,9 +78,11 @@ def list():
                 
                 typer.echo(f"[ID] : {user.id} -- [Prénom] : {user.first_name} -- [Nom] : {user.name} -- [Email] : {user.email} -- [Departement] : {user.department.name}")
         
-        typer.echo("Action restreinte.")
+        else:
+            typer.echo("Action restreinte.")
     
-    typer.echo("Veuillez vous authentifier et réessayer.")
+    else:
+        typer.echo("Veuillez vous authentifier et réessayer.")
 
 
 @app.command()

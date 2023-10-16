@@ -8,14 +8,17 @@ app = typer.Typer()
 
 @app.command()
 def list():
-    if _verify_token():
+    token_check = _verify_token()
+    if token_check:
         
         queryset = Contract.select()
         
         for contract in queryset:
-            if queryset.len() == 0:
+            if len(Contract) == 0:
                 typer.echo("La base de donnée ne contient aucun contrat.")
             
-            typer.echo(f"[ID] : {contract.id} -- [Client] : {contract.client.identity} -- [Commercial associé] : {contract.collaborator.identity} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}")
+            else:
+                typer.echo(f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}")
     
-    typer.echo("Veuillez vous authentifier.")
+    else:
+        typer.echo("Veuillez vous authentifier et réessayer.")

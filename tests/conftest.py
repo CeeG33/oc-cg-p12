@@ -121,7 +121,53 @@ def fake_contract():
     yield fake_contract
     
     cleanup()
+
+
+@pytest.fixture()
+def fake_event():
+    collaborator_department = department.Department.create(name="Bâteau")
+    support_department = department.Department.create(name="Chasse")
+    client_company = company.Company.create(name="Thalès")
+    salesman = collaborator.Collaborator.create(first_name="Patrick",
+                                                name="Etoile",
+                                                email="patrick@etoile.fr",
+                                                password="etoile",
+                                                department=collaborator_department)
+    support = collaborator.Collaborator.create(first_name="Fake",
+                                                name="Support",
+                                                email="support@etoile.fr",
+                                                password="support",
+                                                department=support_department)
+    fake_client = client.Client.create(first_name="Bernard",
+                                       name="Hermite",
+                                       email="bernard@lamer.fr",
+                                       phone="0654978959",
+                                       company=client_company,
+                                       collaborator=salesman)
+    fake_contract = contract.Contract.create(client=fake_client,
+                                             collaborator=salesman,
+                                             total_sum=15000)
+    fake_event = event.Event.create(contract=fake_contract,
+                                    start_date="2024-09-10 14:00",
+                                    end_date="2024-09-10 23:00",
+                                    location="55, rue des Acacias - 77093 VILLEFANTOME",
+                                    attendees=8,
+                                    support=support)
     
+    def cleanup():
+        fake_contract.delete_instance()
+        fake_client.delete_instance()
+        collaborator_department.delete_instance()
+        support_department.delete_instance()
+        client_company.delete_instance()
+        support.delete_instance()
+        salesman.delete_instance()
+    
+    yield fake_event
+    
+    cleanup()
+
+
 @pytest.fixture()
 def valid_token():
     collaborator_department = department.Department.create(name="Développement")
