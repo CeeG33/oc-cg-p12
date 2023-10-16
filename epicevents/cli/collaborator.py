@@ -76,30 +76,28 @@ def list():
                 if len(Collaborator) == 0:
                     typer.echo("La base de donnée ne contient aucun collaborateur.")
                 
-                typer.echo(f"[ID] : {user.id} -- [Identité] : {user.identity} -- [Email] : {user.email} -- [Departement] : {user.department.name}")
+                typer.echo(f"[ID] : {user.id} -- [Prénom] : {user.first_name} -- [Nom] : {user.name} -- [Email] : {user.email} -- [Departement] : {user.department.name}")
         
         typer.echo("Action restreinte.")
     
     typer.echo("Veuillez vous authentifier et réessayer.")
 
-##
-##
-## CONTINUE TESTS HERE
-##
-##
+
 @app.command()
-def create(identity: str, email: str, password: str, department: int):
+def create(first_name: str, name: str, email: str, password: str, department: int):
     token_check = _verify_token()
     if token_check:
-        collaborator_department = token_check.get("department_id")
+        collaborator_department = token_check[1]["department_id"]
         
-        if collaborator_department == MANAGEMENT_DEPARTMENT_ID:
-            Collaborator.create(identity=identity, email=email, password=password, department=department)
-            typer.echo(f"Le collaborateur {identity} a été créé avec succès.")
-
-        typer.echo("Action restreinte.")
+        if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
+            Collaborator.create(first_name=first_name, name=name, email=email, password=password, department=department)
+            typer.echo(f"Le collaborateur {first_name} {name} a été créé avec succès.")
         
-    typer.echo("Veuillez vous authentifier.")
+        else:
+            typer.echo("Action restreinte.")
+        
+    else:
+        typer.echo("Veuillez vous authentifier et réessayer.")
 
 
 if __name__ == "__main__":

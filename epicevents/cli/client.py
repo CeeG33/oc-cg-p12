@@ -15,6 +15,6 @@ def show_all_clients():
             if queryset.len() == 0:
                 typer.echo("La base de donnée ne contient aucun client.")
             
-            typer.echo(f"[ID] : {client.id} -- [Identité] : {client.identity} -- [Email] : {client.email} -- [Téléphone] : {client.phone} -- [Entreprise] : {client.company.name} -- [Date de création] : {client.creation_date} -- [Dernier contact] : {client.last_update} -- Commercial associé : {client.collaborator.identity}")
+            typer.echo(f"[ID] : {client.id} -- [Prénom] : {client.first_name} -- [Nom] : {client.name} -- [Email] : {client.email} -- [Téléphone] : {client.phone} -- [Entreprise] : {client.company.name} -- [Date de création] : {client.creation_date} -- [Dernier contact] : {client.last_update} -- Commercial associé : {client.collaborator.identity}")
         
     typer.echo("Veuillez vous authentifier.")

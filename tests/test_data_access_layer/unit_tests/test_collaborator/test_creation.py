@@ -6,62 +6,87 @@ from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.data_access_layer.department import Department
 
 def test_collaborator_creation(fake_department):
-    identity = "Utilisateur Test"
+    first_name = "Utilisateur"
+    name = "Test"
     email = "test@epicevents.com"
     password = "password"
     department = fake_department
     
     collaborator = Collaborator.create(
-        identity=identity, 
+        first_name=first_name,
+        name=name, 
         email=email, 
         password=password, 
         department=department
     )
     
-    assert collaborator.identity == identity
+    assert collaborator.first_name == first_name
+    assert collaborator.name == name
     assert collaborator.email == email
     assert collaborator.department.id == department.id
     assert collaborator.password != password
     
-def test_collaborator_creation_with_wrong_identity(fake_department):
-    identity = "56465565"
+def test_collaborator_creation_with_wrong_first_name(fake_department):
+    first_name = "56465565"
+    name = "Test"
     email = "test@epicevents.com"
     password = "password"
     department = fake_department
     
     with pytest.raises(ValueError):
         Collaborator.create(
-            identity=identity, 
+            first_name=first_name,
+            name=name,  
             email=email, 
             password=password, 
             department=department
         )
+
+def test_collaborator_creation_with_wrong_name(fake_department):
+    first_name = "Utilisateur"
+    name = "56465565"
+    email = "test@epicevents.com"
+    password = "password"
+    department = fake_department
     
+    with pytest.raises(ValueError):
+        Collaborator.create(
+            first_name=first_name,
+            name=name,  
+            email=email, 
+            password=password, 
+            department=department
+        )
+
 def test_collaborator_creation_with_wrong_email(fake_department):
-    identity = "Utilisateur Test"
+    first_name = "Utilisateur"
+    name = "Test"
     email = "56465565"
     password = "password"
     department = fake_department
     
     with pytest.raises(ValueError):
         Collaborator.create(
-            identity=identity, 
+            first_name=first_name,
+            name=name, 
             email=email, 
             password=password, 
             department=department
         )
 
 def test_collaborator_creation_with_wrong_department_id():
-    identity = "Utilisateur Test"
+    first_name = "Utilisateur"
+    name = "Test"
     email = "test@epicevents.com"
     password = "password"
     department = 154644
     
     with pytest.raises(IntegrityError):
         Collaborator.create(
-            identity=identity, 
-            email=email, 
-            password=password, 
+            first_name=first_name,
+            name=name,
+            email=email,
+            password=password,
             department=department
         )
 
@@ -70,15 +95,17 @@ def test_collaborator_creation_with_missing_attribute():
         Collaborator.create()
 
 def test_collaborator_get_data(fake_department):
-    identity = "Utilisateur Testtest"
+    first_name = "Utilisateur"
+    name = "Test"
     email = "testing@epicevents.com"
     password = "password"
     department = fake_department
     
     collaborator = Collaborator.create(
-        identity=identity, 
-        email=email, 
-        password=password, 
+        first_name=first_name,
+        name=name, 
+        email=email,
+        password=password,
         department=department
     )
     

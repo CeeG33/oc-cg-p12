@@ -51,7 +51,8 @@ def fake_company():
 @pytest.fixture()
 def fake_collaborator():
     collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
                                                          department=collaborator_department)
@@ -68,11 +69,13 @@ def fake_collaborator():
 def fake_client():
     collaborator_department = department.Department.create(name="Bâteau")
     client_company = company.Company.create(name="Thalès")
-    salesman = collaborator.Collaborator.create(identity="Patrick Etoile",
+    salesman = collaborator.Collaborator.create(first_name="Patrick",
+                                                name="Etoile",
                                                 email="patrick@etoile.fr",
                                                 password="etoile",
                                                 department=collaborator_department)
-    fake_client = client.Client.create(identity="Bernard Hermite",
+    fake_client = client.Client.create(first_name="Bernard",
+                                       name="Hermite",
                                        email="bernard@lamer.fr",
                                        phone="0654978959",
                                        company=client_company,
@@ -93,11 +96,13 @@ def fake_client():
 def fake_contract():
     collaborator_department = department.Department.create(name="Bâteau")
     client_company = company.Company.create(name="Thalès")
-    salesman = collaborator.Collaborator.create(identity="Patrick Etoile",
+    salesman = collaborator.Collaborator.create(first_name="Patrick",
+                                                name="Etoile",
                                                 email="patrick@etoile.fr",
                                                 password="etoile",
                                                 department=collaborator_department)
-    fake_client = client.Client.create(identity="Bernard Hermite",
+    fake_client = client.Client.create(first_name="Bernard",
+                                       name="Hermite",
                                        email="bernard@lamer.fr",
                                        phone="0654978959",
                                        company=client_company,
@@ -120,7 +125,8 @@ def fake_contract():
 @pytest.fixture()
 def valid_token():
     collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
                                                          department=collaborator_department)
@@ -137,7 +143,8 @@ def valid_token():
 @pytest.fixture()
 def expired_token():
     collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
                                                          department=collaborator_department)
@@ -161,7 +168,8 @@ def expired_token():
 @pytest.fixture()
 def wrong_token():
     collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
                                                          department=collaborator_department)
@@ -169,7 +177,7 @@ def wrong_token():
         "collaborator_id" : None,
         "email": f"{fake_collaborator.email}",
         "department_id": f"{fake_collaborator.department}",
-        "exp": datetime.utcnow() - timedelta(hours=1)
+        "exp": datetime.utcnow() + timedelta(hours=1)
     }
     
     fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
@@ -185,7 +193,8 @@ def wrong_token():
 @pytest.fixture()
 def wrong_token_str():
     collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
                                                          department=collaborator_department)
@@ -209,7 +218,8 @@ def wrong_token_str():
 @pytest.fixture()
 def wrong_department_token():
     collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(identity="Fake Collaborator",
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
                                                          department=collaborator_department)
