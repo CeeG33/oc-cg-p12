@@ -12,6 +12,8 @@ if os.getenv("TOKEN"):
     TOKEN = os.getenv("TOKEN")
 
 MANAGEMENT_DEPARTMENT_ID = 1
+SALES_DEPARTMENT_ID = 2
+SUPPORT_DEPARTMENT_ID = 3
 
 app = typer.Typer()
 
@@ -94,6 +96,42 @@ def create(first_name: str, name: str, email: str, password: str, department: in
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             Collaborator.create(first_name=first_name, name=name, email=email, password=password, department=department)
             typer.echo(f"Le collaborateur {first_name} {name} a été créé avec succès.")
+        
+        else:
+            typer.echo("Action restreinte.")
+        
+    else:
+        typer.echo("Veuillez vous authentifier et réessayer.")
+
+
+## CONTINUER ICI
+@app.command()
+def update(collaborator_id: int):
+    token_check = _verify_token()
+    if token_check:
+        collaborator_department = token_check[1]["department_id"]
+        
+        if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
+            ## Ecrire la commande qui MAJ le collaborateur
+            typer.echo(f"Le collaborateur {first_name} {name} a été mis à jour avec succès.")
+        
+        else:
+            typer.echo("Action restreinte.")
+        
+    else:
+        typer.echo("Veuillez vous authentifier et réessayer.")
+
+
+## CONTINUER ICI
+@app.command()
+def delete(collaborator_id: int):
+    token_check = _verify_token()
+    if token_check:
+        collaborator_department = token_check[1]["department_id"]
+        
+        if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
+            ## Ecrire la commande qui supprime le collaborateur
+            typer.echo(f"Le collaborateur {first_name} {name} a été supprimé avec succès.")
         
         else:
             typer.echo("Action restreinte.")

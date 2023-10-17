@@ -1,5 +1,6 @@
 import typer
 from epicevents.data_access_layer.event import Event
+from epicevents.cli.collaborator import MANAGEMENT_DEPARTMENT_ID, SALES_DEPARTMENT_ID, SUPPORT_DEPARTMENT_ID
 from .collaborator import _verify_token
 
 

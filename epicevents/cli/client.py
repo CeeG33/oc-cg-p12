@@ -1,6 +1,7 @@
 import os, typer
 from dotenv import load_dotenv
 from epicevents.data_access_layer.client import Client
+from epicevents.cli.collaborator import MANAGEMENT_DEPARTMENT_ID, SALES_DEPARTMENT_ID, SUPPORT_DEPARTMENT_ID
 from .collaborator import _verify_token
 
 
@@ -22,3 +23,4 @@ def list():
     
     else:    
         typer.echo("Veuillez vous authentifier et réessayer.")
+        
