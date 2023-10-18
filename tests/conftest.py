@@ -5,7 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 from epicevents.data_access_layer import client, collaborator, company, contract, department, event
 from epicevents.data_access_layer import database
 from epicevents.cli import collaborator as clicollaborator
-from epicevents.cli.collaborator import SECRET_KEY
+from epicevents.cli.collaborator import SECRET_KEY, MANAGEMENT_DEPARTMENT_ID, SALES_DEPARTMENT_ID, SUPPORT_DEPARTMENT_ID
 
 MODELS = [client.Client,
           collaborator.Collaborator,
@@ -293,3 +293,31 @@ def monkey_dotenv(monkeypatch):
     monkeypatch.setattr(clicollaborator, "dotenv_file", dotenv_file)
     
     return dotenv_file
+
+@pytest.fixture()
+def monkey_token_check_management(monkeypatch):
+    def return_monkey_token():
+        return (True, {"department_id": MANAGEMENT_DEPARTMENT_ID})
+    
+    monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
+    
+@pytest.fixture()
+def monkey_token_check_sales(monkeypatch):
+    def return_monkey_token():
+        return (True, {"department_id": SALES_DEPARTMENT_ID})
+    
+    monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
+    
+@pytest.fixture()
+def monkey_token_check_support(monkeypatch):
+    def return_monkey_token():
+        return (True, {"department_id": SUPPORT_DEPARTMENT_ID})
+    
+    monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
+    
+@pytest.fixture()
+def monkey_token_check_false(monkeypatch):
+    def return_monkey_token():
+        return False
+    
+    monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)

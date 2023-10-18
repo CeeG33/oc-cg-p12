@@ -1,9 +1,13 @@
 import os, jwt, typer
+from typing import Optional
+from typing_extensions import Annotated
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+from peewee import DoesNotExist
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv, find_dotenv, set_key
 from epicevents.data_access_layer.collaborator import Collaborator
+from epicevents.data_access_layer.department import Department
 
 dotenv_file = load_dotenv()
 
@@ -104,22 +108,69 @@ def create(first_name: str, name: str, email: str, password: str, department: in
         typer.echo("Veuillez vous authentifier et réessayer.")
 
 
-## CONTINUER ICI
 @app.command()
-def update(collaborator_id: int):
+def update(collaborator_id: Annotated[int, typer.Argument()],
+           new_value: Annotated[str, typer.Argument()], 
+           first_name: Annotated[bool, typer.Option()] = False,
+           name: Annotated[bool, typer.Option()] = False,
+           email: Annotated[bool, typer.Option()] = False,
+           password: Annotated[bool, typer.Option()] = False,
+           department: Annotated[bool, typer.Option()] = False
+        ):
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
-            ## Ecrire la commande qui MAJ le collaborateur
-            typer.echo(f"Le collaborateur {first_name} {name} a été mis à jour avec succès.")
-        
+            try:
+                collaborator = Collaborator.get(Collaborator.id == collaborator_id)
+                
+                if first_name:
+                    collaborator.first_name = new_value
+                    collaborator.save()
+                    print(f"Le champ 'Prénom' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    
+                elif name:
+                    collaborator.name = new_value
+                    collaborator.save()
+                    print(f"Le champ 'Nom' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    
+                elif email:
+                    collaborator.email = new_value
+                    collaborator.save()
+                    print(f"Le champ 'Email' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    
+                elif password:
+                    collaborator.password = new_value
+                    collaborator.save()
+                    print(f"Le champ 'Mot de passe' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    
+                elif department:
+                    department_check = Department.get_or_none(Department.id == new_value)
+                    
+                    if department_check:
+                        collaborator.department = new_value
+                        collaborator.save()
+                        print(f"Le champ 'Département' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    
+                    else:
+                        print("Veuillez entrer un numéro de département valide.")
+                        raise typer.Exit(code=1)
+                    
+                else:
+                    print("Vous n'avez pas sélectionné d'attribut à modifier.")
+                    raise typer.Exit()
+            
+            except DoesNotExist:
+                print(f"Aucun collaborateur trouvé avec l'ID {collaborator_id}.")
+
         else:
-            typer.echo("Action restreinte.")
+            print("Action restreinte.")
+            raise typer.Exit()
         
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 ## CONTINUER ICI
