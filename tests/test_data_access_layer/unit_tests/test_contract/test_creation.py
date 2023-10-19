@@ -17,7 +17,7 @@ def test_contract_creation(fake_client, fake_collaborator):
     
     assert contract.client.id == client.id
     assert contract.collaborator.id == collaborator.id
-    assert contract.total_sum == Contract()._format_number(total_sum)
+    assert contract.total_sum == total_sum
     assert contract.amount_due == None
     assert contract.creation_date == datetime.now().date()
     assert contract.signed == False

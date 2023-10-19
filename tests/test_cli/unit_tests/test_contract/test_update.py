@@ -10,7 +10,7 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 def test_client_update_successful(monkey_token_check_management, fake_contract, fake_client, capsys):
     contract = fake_contract
     new_client = fake_client
-    
+
     update(contract.id, new_client.id, client=True)
 
     updated_contract = Contract.get(Contract.id == contract.id)
@@ -156,16 +156,13 @@ def test_contract_update_fails_with_wrong_salesman(monkey_token_check_fake_sales
     
     assert "Action restreinte." in captured.out.strip()
     
-def test_contract_update_fails_with_correct_salesman(monkey_token_check_correct_sales, fake_contract, fake_client, capsys):
-    contract = fake_contract
-    new_client = fake_client
-    
-    update(contract.id, new_client.id, client=True)
+def test_contract_update_with_correct_salesman_succesful(monkey_token_check_correct_sales, fake_contract, fake_client, capsys):
+    print(fake_contract.collaborator.id)
+    update(fake_contract.id, fake_client.id, client=True)
 
-    updated_contract = Contract.get(Contract.id == contract.id)
+    updated_contract = Contract.get(Contract.id == fake_contract.id)
     
     captured = capsys.readouterr()
     
-    assert updated_contract.client.id == new_client.id
-    assert updated_contract.client.first_name == new_client.first_name
-    assert f"Le champ 'Client' du contrat n°{contract.id} a été mis à jour avec succès." in captured.out.strip()
+    assert updated_contract.client.id == fake_client.id
+    assert f"Le champ 'Client' du contrat n°{fake_contract.id} a été mis à jour avec succès." in captured.out.strip()

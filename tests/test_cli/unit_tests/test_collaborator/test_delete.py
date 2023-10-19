@@ -28,7 +28,7 @@ def test_collaborator_deletion_fails_with_wrong_collaborator_id(monkey_token_che
     
     assert f"Aucun collaborateur trouvé avec l'ID n°{fake_id}." in captured.out.strip()
     
-def test_collaborator_update_not_authorized(monkey_token_check_sales, fake_collaborator, capsys):
+def test_collaborator_update_not_authorized(monkey_token_check_correct_sales, fake_collaborator, capsys):
     collaborator = fake_collaborator
     
     with pytest.raises(Exit):

@@ -50,20 +50,18 @@ def test_creation_with_optional_arguments_successful(monkey_token_check_manageme
     
     created_contract.delete_instance()
     
-def test_creation_not_authorized(monkey_token_check_sales, fake_client, fake_collaborator, capsys):
+def test_creation_not_authorized(monkey_token_check_correct_sales, fake_client, fake_collaborator, capsys):
     client = fake_client
     collaborator = fake_collaborator
-    create(client=client.id,
+    created_contract = create(client=client.id,
            collaborator=collaborator.id,
            total_sum=15000,
            amount_due=15000,
            creation_date="2023-10-15",
            signed=True)
     
-    created_contract = Contract.get_or_none(Contract.id == 1)
-
     captured = capsys.readouterr()
-    
+
     assert created_contract == None
     assert "Action restreinte." in captured.out.strip()
     

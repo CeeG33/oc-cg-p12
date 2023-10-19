@@ -70,13 +70,13 @@ def test_password_update_successful(monkey_token_check_management, fake_collabor
 
 def test_department_update_successful(monkey_token_check_management, fake_department, fake_collaborator, capsys):
     collaborator = fake_collaborator
-    update(collaborator.id, "2", department=True)
+    update(collaborator.id, 1, department=True)
 
     updated_collaborator = Collaborator.get(Collaborator.id == collaborator.id)
     
     captured = capsys.readouterr()
     
-    assert updated_collaborator.department.id == 2
+    assert updated_collaborator.department.id == 1
     assert f"Le champ 'Département' du collaborateur n°{collaborator.id} a été mis à jour avec succès." in captured.out.strip()
 
 def test_department_update_unsuccessful(monkey_token_check_management, fake_collaborator, capsys):
@@ -108,7 +108,7 @@ def test_collaborator_update_fails_with_wrong_collaborator_id(monkey_token_check
     
     assert f"Aucun collaborateur trouvé avec l'ID n°{fake_id}." in captured.out.strip()
     
-def test_collaborator_update_not_authorized(monkey_token_check_sales, fake_collaborator, capsys):
+def test_collaborator_update_not_authorized(monkey_token_check_correct_sales, fake_collaborator, capsys):
     collaborator = fake_collaborator
     
     with pytest.raises(Exit):

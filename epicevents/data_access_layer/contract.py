@@ -11,8 +11,8 @@ from .department import Department
 class Contract(BaseModel):
     client = ForeignKeyField(Client, backref="client")
     collaborator = ForeignKeyField(Collaborator, backref="associated_sales", on_delete="SET NULL")
-    total_sum = DecimalField(decimal_places=2)
-    amount_due = DecimalField(null=True, decimal_places=2)
+    total_sum = FloatField()
+    amount_due = FloatField(null=True)
     creation_date = DateTimeField(default=datetime.now().date)
     signed = BooleanField(default=False)
     
@@ -25,6 +25,12 @@ class Contract(BaseModel):
         
         if not isinstance(self.client.id, int):
             raise ValueError("Erreur : Veuillez entrer un identifiant client valide.")
+        
+        if not isinstance(self.total_sum, (int, float)):
+            raise ValueError("Erreur : Veuillez entrer un montant valide.")
+        
+        if self.amount_due != None and not isinstance(self.amount_due, (int, float)):
+            raise ValueError("Erreur : Veuillez entrer un montant valide.")
         
         if self.signed not in (True, False):
             raise ValueError("Erreur : Le champ signed doit être rempli avec True(= contrat signé) ou False(=contrat non signé).")
