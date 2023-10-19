@@ -106,7 +106,7 @@ def test_collaborator_update_fails_with_wrong_collaborator_id(monkey_token_check
     
     captured = capsys.readouterr()
     
-    assert f"Aucun collaborateur trouvé avec l'ID {fake_id}." in captured.out.strip()
+    assert f"Aucun collaborateur trouvé avec l'ID n°{fake_id}." in captured.out.strip()
     
 def test_collaborator_update_not_authorized(monkey_token_check_sales, fake_collaborator, capsys):
     collaborator = fake_collaborator

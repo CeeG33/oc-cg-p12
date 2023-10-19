@@ -13,7 +13,7 @@ class Event(BaseModel):
     location = CharField(max_length=150)
     attendees = IntegerField()
     notes = TextField(null=True)
-    support = ForeignKeyField(Collaborator, backref="associated_support")
+    support = ForeignKeyField(Collaborator, backref="associated_support", on_delete="SET NULL")
     
     def save(self, *args, **kwargs):
         if not self.contract and self.start_date and self.end_date and self.location:

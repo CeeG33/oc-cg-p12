@@ -162,7 +162,7 @@ def update(collaborator_id: Annotated[int, typer.Argument()],
                     raise typer.Exit()
             
             except DoesNotExist:
-                print(f"Aucun collaborateur trouvé avec l'ID {collaborator_id}.")
+                print(f"Aucun collaborateur trouvé avec l'ID n°{collaborator_id}.")
 
         else:
             print("Action restreinte.")
@@ -173,7 +173,6 @@ def update(collaborator_id: Annotated[int, typer.Argument()],
         raise typer.Exit()
 
 
-## CONTINUER ICI
 @app.command()
 def delete(collaborator_id: int):
     token_check = _verify_token()
@@ -181,14 +180,21 @@ def delete(collaborator_id: int):
         collaborator_department = token_check[1]["department_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
-            ## Ecrire la commande qui supprime le collaborateur
-            typer.echo(f"Le collaborateur {first_name} {name} a été supprimé avec succès.")
-        
+            try:
+                collaborator = Collaborator.get(Collaborator.id == collaborator_id)
+                collaborator.delete_instance()
+                print(f"Le collaborateur n°{collaborator_id} a été supprimé avec succès.")
+            
+            except DoesNotExist:
+                print(f"Aucun collaborateur trouvé avec l'ID n°{collaborator_id}.")
+
         else:
-            typer.echo("Action restreinte.")
+            print("Action restreinte.")
+            raise typer.Exit()
         
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 if __name__ == "__main__":

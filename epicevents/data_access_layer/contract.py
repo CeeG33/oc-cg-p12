@@ -10,7 +10,7 @@ from .department import Department
 
 class Contract(BaseModel):
     client = ForeignKeyField(Client, backref="client")
-    collaborator = ForeignKeyField(Collaborator, backref="associated_sales")
+    collaborator = ForeignKeyField(Collaborator, backref="associated_sales", on_delete="SET NULL")
     total_sum = FloatField()
     amount_due = FloatField(null=True)
     creation_date = DateTimeField(default=datetime.now().date)

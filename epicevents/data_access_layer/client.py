@@ -14,7 +14,7 @@ class Client(BaseModel):
     company = ForeignKeyField(Company, backref="company")
     creation_date = DateTimeField(default=datetime.now().date)
     last_update = DateTimeField(null=True)
-    collaborator = ForeignKeyField(Collaborator, backref="associated_sales")
+    collaborator = ForeignKeyField(Collaborator, backref="associated_sales", on_delete="SET NULL")
     
     def save(self, *args, **kwargs):
         if not (self.first_name and self.name):
