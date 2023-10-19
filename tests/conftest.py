@@ -49,43 +49,31 @@ def fake_company():
     cleanup()
     
 @pytest.fixture()
-def fake_collaborator():
-    collaborator_department = department.Department.create(name="Développement")
+def fake_collaborator(fake_department):
     fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
                                                          name="Collaborator",
                                                          email="test@company.fr",
                                                          password="testpass",
-                                                         department=collaborator_department)
+                                                         department=fake_department)
     
     def cleanup():
         fake_collaborator.delete_instance()
-        collaborator_department.delete_instance()
     
     yield fake_collaborator
     
     cleanup()
     
 @pytest.fixture()
-def fake_client():
-    collaborator_department = department.Department.create(name="Bâteau")
-    client_company = company.Company.create(name="Safran")
-    salesman = collaborator.Collaborator.create(first_name="Bob",
-                                                name="Eponge",
-                                                email="bobk@eponge.fr",
-                                                password="etoile",
-                                                department=collaborator_department)
+def fake_client(fake_company, fake_collaborator):
     fake_client = client.Client.create(first_name="Gérard",
                                        name="Hermite",
                                        email="gerard@lamer.fr",
                                        phone="0655698748",
-                                       company=client_company,
-                                       collaborator=salesman)
+                                       company=fake_company,
+                                       collaborator=fake_collaborator)
     
     def cleanup():
         fake_client.delete_instance()
-        collaborator_department.delete_instance()
-        client_company.delete_instance()
-        salesman.delete_instance()
     
     yield fake_client
     
@@ -93,30 +81,13 @@ def fake_client():
     
 
 @pytest.fixture()
-def fake_contract():
-    collaborator_department = department.Department.create(name="Mer")
-    client_company = company.Company.create(name="Thalès")
-    salesman = collaborator.Collaborator.create(first_name="Patrick",
-                                                name="Etoile",
-                                                email="patrick@etoile.fr",
-                                                password="etoile",
-                                                department=collaborator_department)
-    fake_client = client.Client.create(first_name="Bernard",
-                                       name="Hermite",
-                                       email="bernard@lamer.fr",
-                                       phone="0654978959",
-                                       company=client_company,
-                                       collaborator=salesman)
+def fake_contract(fake_client, fake_collaborator):
     fake_contract = contract.Contract.create(client=fake_client,
-                                             collaborator=salesman,
+                                             collaborator=fake_collaborator,
                                              total_sum=15000)
     
     def cleanup():
         fake_contract.delete_instance()
-        fake_client.delete_instance()
-        collaborator_department.delete_instance()
-        client_company.delete_instance()
-        salesman.delete_instance()
     
     yield fake_contract
     
@@ -124,44 +95,16 @@ def fake_contract():
 
 
 @pytest.fixture()
-def fake_event():
-    collaborator_department = department.Department.create(name="Bâteau")
-    support_department = department.Department.create(name="Chasse")
-    client_company = company.Company.create(name="Thalès")
-    salesman = collaborator.Collaborator.create(first_name="Patrick",
-                                                name="Etoile",
-                                                email="patrick@etoile.fr",
-                                                password="etoile",
-                                                department=collaborator_department)
-    support = collaborator.Collaborator.create(first_name="Fake",
-                                                name="Support",
-                                                email="support@etoile.fr",
-                                                password="support",
-                                                department=support_department)
-    fake_client = client.Client.create(first_name="Bernard",
-                                       name="Hermite",
-                                       email="bernard@lamer.fr",
-                                       phone="0654978959",
-                                       company=client_company,
-                                       collaborator=salesman)
-    fake_contract = contract.Contract.create(client=fake_client,
-                                             collaborator=salesman,
-                                             total_sum=15000)
+def fake_event(fake_contract, fake_collaborator):
     fake_event = event.Event.create(contract=fake_contract,
                                     start_date="2024-09-10 14:00",
                                     end_date="2024-09-10 23:00",
                                     location="55, rue des Acacias - 77093 VILLEFANTOME",
                                     attendees=8,
-                                    support=support)
+                                    support=fake_collaborator)
     
     def cleanup():
-        fake_contract.delete_instance()
-        fake_client.delete_instance()
-        collaborator_department.delete_instance()
-        support_department.delete_instance()
-        client_company.delete_instance()
-        support.delete_instance()
-        salesman.delete_instance()
+        fake_event.delete_instance()
     
     yield fake_event
     
@@ -169,31 +112,15 @@ def fake_event():
 
 
 @pytest.fixture()
-def valid_token():
-    collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
-                                                         name="Collaborator",
-                                                         email="test@company.fr",
-                                                         password="testpass",
-                                                         department=collaborator_department)
+def valid_token(fake_collaborator):
     fake_token = jwt.encode(fake_collaborator.get_data(), key=SECRET_KEY, algorithm="HS256")
-    
-    def cleanup():
-        fake_collaborator.delete_instance()
-        collaborator_department.delete_instance()
     
     yield fake_token
     
-    cleanup()
     
 @pytest.fixture()
-def expired_token():
-    collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
-                                                         name="Collaborator",
-                                                         email="test@company.fr",
-                                                         password="testpass",
-                                                         department=collaborator_department)
+def expired_token(fake_collaborator):
+
     payload = {
         "collaborator_id" : f"{fake_collaborator.id}",
         "email": f"{fake_collaborator.email}",
@@ -203,22 +130,11 @@ def expired_token():
     
     fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
     
-    def cleanup():
-        fake_collaborator.delete_instance()
-        collaborator_department.delete_instance()
-    
     yield fake_token
-    
-    cleanup()
+
 
 @pytest.fixture()
-def wrong_token():
-    collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
-                                                         name="Collaborator",
-                                                         email="test@company.fr",
-                                                         password="testpass",
-                                                         department=collaborator_department)
+def wrong_token(fake_collaborator):
     payload = {
         "collaborator_id" : None,
         "email": f"{fake_collaborator.email}",
@@ -228,22 +144,11 @@ def wrong_token():
     
     fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
     
-    def cleanup():
-        fake_collaborator.delete_instance()
-        collaborator_department.delete_instance()
-    
     yield fake_token
     
-    cleanup()
 
 @pytest.fixture()
-def wrong_token_str():
-    collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
-                                                         name="Collaborator",
-                                                         email="test@company.fr",
-                                                         password="testpass",
-                                                         department=collaborator_department)
+def wrong_token_str(fake_collaborator):
     payload = {
         "collaborator_id" : "Wrong",
         "email": f"{fake_collaborator.email}",
@@ -253,22 +158,11 @@ def wrong_token_str():
     
     fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
     
-    def cleanup():
-        fake_collaborator.delete_instance()
-        collaborator_department.delete_instance()
-    
     yield fake_token
     
-    cleanup()
     
 @pytest.fixture()
-def wrong_department_token():
-    collaborator_department = department.Department.create(name="Développement")
-    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
-                                                         name="Collaborator",
-                                                         email="test@company.fr",
-                                                         password="testpass",
-                                                         department=collaborator_department)
+def wrong_department_token(fake_collaborator):
     payload = {
         "collaborator_id" : f"{fake_collaborator.id}",
         "email": f"{fake_collaborator.email}",
@@ -278,13 +172,8 @@ def wrong_department_token():
     
     fake_token = jwt.encode(payload, key=SECRET_KEY, algorithm="HS256")
     
-    def cleanup():
-        fake_collaborator.delete_instance()
-        collaborator_department.delete_instance()
-    
     yield fake_token
     
-    cleanup()
 
 @pytest.fixture()
 def monkey_dotenv(monkeypatch):
@@ -305,10 +194,10 @@ def monkey_token_check_management(monkeypatch):
     monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
     
 @pytest.fixture()
-def monkey_token_check_correct_sales(monkeypatch):
+def monkey_token_check_correct_sales(monkeypatch, fake_contract):
     def return_monkey_token():
         return (True, {
-            "collaborator_id": 1,
+            "collaborator_id": fake_contract.collaborator.id,
             "email": "etoile@mer.fr",
             "department_id": SALES_DEPARTMENT_ID})
     
