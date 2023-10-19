@@ -68,16 +68,16 @@ def fake_collaborator():
 @pytest.fixture()
 def fake_client():
     collaborator_department = department.Department.create(name="Bâteau")
-    client_company = company.Company.create(name="Thalès")
-    salesman = collaborator.Collaborator.create(first_name="Patrick",
-                                                name="Etoile",
-                                                email="patrick@etoile.fr",
+    client_company = company.Company.create(name="Safran")
+    salesman = collaborator.Collaborator.create(first_name="Bob",
+                                                name="Eponge",
+                                                email="bobk@eponge.fr",
                                                 password="etoile",
                                                 department=collaborator_department)
-    fake_client = client.Client.create(first_name="Bernard",
+    fake_client = client.Client.create(first_name="Gérard",
                                        name="Hermite",
-                                       email="bernard@lamer.fr",
-                                       phone="0654978959",
+                                       email="gerard@lamer.fr",
+                                       phone="0655698748",
                                        company=client_company,
                                        collaborator=salesman)
     
@@ -94,7 +94,7 @@ def fake_client():
 
 @pytest.fixture()
 def fake_contract():
-    collaborator_department = department.Department.create(name="Bâteau")
+    collaborator_department = department.Department.create(name="Mer")
     client_company = company.Company.create(name="Thalès")
     salesman = collaborator.Collaborator.create(first_name="Patrick",
                                                 name="Etoile",
@@ -297,21 +297,40 @@ def monkey_dotenv(monkeypatch):
 @pytest.fixture()
 def monkey_token_check_management(monkeypatch):
     def return_monkey_token():
-        return (True, {"department_id": MANAGEMENT_DEPARTMENT_ID})
+        return (True, {
+            "collaborator_id": 1,
+            "email": "etoile@mer.fr",
+            "department_id": MANAGEMENT_DEPARTMENT_ID})
     
     monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
     
 @pytest.fixture()
-def monkey_token_check_sales(monkeypatch):
+def monkey_token_check_correct_sales(monkeypatch):
     def return_monkey_token():
-        return (True, {"department_id": SALES_DEPARTMENT_ID})
+        return (True, {
+            "collaborator_id": 1,
+            "email": "etoile@mer.fr",
+            "department_id": SALES_DEPARTMENT_ID})
+    
+    monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
+    
+@pytest.fixture()
+def monkey_token_check_fake_sales(monkeypatch):
+    def return_monkey_token():
+        return (True, {
+            "collaborator_id": 50,
+            "email": "etoile@mer.fr",
+            "department_id": SALES_DEPARTMENT_ID})
     
     monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
     
 @pytest.fixture()
 def monkey_token_check_support(monkeypatch):
     def return_monkey_token():
-        return (True, {"department_id": SUPPORT_DEPARTMENT_ID})
+        return (True, {
+            "collaborator_id": 1,
+            "email": "etoile@mer.fr",
+            "department_id": SUPPORT_DEPARTMENT_ID})
     
     monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
     

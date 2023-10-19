@@ -1,7 +1,12 @@
 import typer
+from typing_extensions import Annotated
+from peewee import DoesNotExist
+from datetime import datetime
 from epicevents.data_access_layer.contract import Contract
-from epicevents.cli.collaborator import MANAGEMENT_DEPARTMENT_ID, SALES_DEPARTMENT_ID, SUPPORT_DEPARTMENT_ID
-from .collaborator import _verify_token
+from epicevents.data_access_layer.client import Client
+from epicevents.data_access_layer.collaborator import Collaborator
+from epicevents.cli import collaborator as clicollaborator
+from epicevents.cli.collaborator import MANAGEMENT_DEPARTMENT_ID, SALES_DEPARTMENT_ID, SUPPORT_DEPARTMENT_ID, _verify_token
 
 
 app = typer.Typer()
@@ -9,7 +14,7 @@ app = typer.Typer()
 
 @app.command()
 def list():
-    token_check = _verify_token()
+    token_check = clicollaborator._verify_token()
     if token_check:
         
         queryset = Contract.select()
@@ -24,16 +29,21 @@ def list():
     else:
         typer.echo("Veuillez vous authentifier et réessayer.")
 
-## CONTINUER ICI
 @app.command()
-def create(first_name: str, name: str, email: str, password: str, department: int):
-    token_check = _verify_token()
+def create(client: Annotated[int, typer.Argument()],
+           collaborator: Annotated[int, typer.Argument()], 
+           total_sum: Annotated[float, typer.Argument()],
+           amount_due: Annotated[float, typer.Argument()] = None,
+           creation_date: Annotated[str, typer.Argument()] = datetime.now().date(),
+           signed: Annotated[bool, typer.Argument()] = False
+        ):
+    token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
-            Contract.create(first_name=first_name, name=name, email=email, password=password, department=department) # A ADAPTER POUR CONTRAT
-            typer.echo(f"Le contrat a été créé avec succès.")
+            Contract.create(client=client, collaborator=collaborator, total_sum=total_sum, amount_due=amount_due, creation_date=creation_date, signed=signed)
+            typer.echo("Le contrat a été créé avec succès.")
         
         else:
             typer.echo("Action restreinte.")
@@ -44,17 +54,80 @@ def create(first_name: str, name: str, email: str, password: str, department: in
 
 ## CONTINUER ICI
 @app.command()
-def update(contract_id: int):
-    token_check = _verify_token()
+def update(contract_id: Annotated[int, typer.Argument()],
+           new_value: Annotated[str, typer.Argument()], 
+           client: Annotated[bool, typer.Option()] = False,
+           collaborator: Annotated[bool, typer.Option()] = False,
+           total_sum: Annotated[bool, typer.Option()] = False,
+           amount_due: Annotated[bool, typer.Option()] = False,
+           creation_date: Annotated[bool, typer.Option()] = False,
+           signed: Annotated[bool, typer.Option()] = False
+        ):
+    token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
-        
-        if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
-            ## Ecrire la commande qui MAJ le contrat
-            typer.echo(f"Le contrat a été mis à jour avec succès.")
-        
+        collaborator_id = token_check[1]["collaborator_id"]
+        try:
+            contract = Contract.get(Contract.id == contract_id)
+                
+        except DoesNotExist:
+            print(f"Aucun contrat trouvé avec l'ID n°{contract_id}.")
+            raise typer.Exit()
+                
+        if (int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID) or (int(collaborator_department) == SALES_DEPARTMENT_ID and int(collaborator_id) == contract.collaborator.id):
+
+            if client:
+                client_check = Client.get_or_none(Client.id == new_value)
+                
+                if client_check:
+                    contract.client = new_value
+                    contract.save()
+                    print(f"Le champ 'Client' du contrat n°{contract_id} a été mis à jour avec succès.")
+                
+                else:
+                    print("Veuillez entrer un numéro de client valide.")
+                    raise typer.Exit(code=1)
+                
+            elif collaborator:
+                collaborator_check = Collaborator.get_or_none(Collaborator.id == new_value)
+                
+                if collaborator_check:
+                    contract.collaborator = new_value
+                    contract.save()
+                    print(f"Le champ 'Collaborateur' du contrat n°{contract_id} a été mis à jour avec succès.")
+                
+                else:
+                    print("Veuillez entrer un numéro de collaborateur valide.")
+                    raise typer.Exit(code=1)
+                
+            elif total_sum:
+                contract.total_sum = new_value
+                contract.save()
+                print(f"Le champ 'Montant total' du contrat n°{contract_id} a été mis à jour avec succès.")
+                
+            elif amount_due:
+                contract.amount_due = new_value
+                contract.save()
+                print(f"Le champ 'Montant dû' du contrat n°{contract_id} a été mis à jour avec succès.")
+                
+            elif creation_date:
+                contract.creation_date = new_value
+                contract.save()
+                print(f"Le champ 'Date de création' du contrat n°{contract_id} a été mis à jour avec succès.")
+                
+            elif signed:
+                contract.signed = new_value
+                contract.save()
+                print(f"Le champ 'Signé' du contrat n°{contract_id} a été mis à jour avec succès.")
+                
+            else:
+                print("Vous n'avez pas sélectionné d'attribut à modifier.")
+                raise typer.Exit()
+            
         else:
-            typer.echo("Action restreinte.")
+            print("Action restreinte.")
+            raise typer.Exit()
         
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()

@@ -1,7 +1,7 @@
 import re
+import datetime as dt
 from datetime import date, datetime
 from peewee import *
-from babel.numbers import format_currency
 from .database import BaseModel
 from .client import Client
 from .collaborator import Collaborator
@@ -11,8 +11,8 @@ from .department import Department
 class Contract(BaseModel):
     client = ForeignKeyField(Client, backref="client")
     collaborator = ForeignKeyField(Collaborator, backref="associated_sales", on_delete="SET NULL")
-    total_sum = FloatField()
-    amount_due = FloatField(null=True)
+    total_sum = DecimalField(decimal_places=2)
+    amount_due = DecimalField(null=True, decimal_places=2)
     creation_date = DateTimeField(default=datetime.now().date)
     signed = BooleanField(default=False)
     
@@ -33,19 +33,8 @@ class Contract(BaseModel):
         
         super().save(*args, **kwargs)
         
-        if self.total_sum:
-            self.total_sum = self._format_number(self.total_sum)
-        
-        if self.amount_due:
-            self.amount_due = self._format_number(self.amount_due)
-
-    def _format_number(self, amount):
-        if not isinstance(amount, (int, float)):
-            raise ValueError("Erreur : Vous devez renseigner un nombre valide.")
-        amount = format_currency(amount, "EUR", locale="fr_FR")
-        return amount
-        
     def _validate_date(self):
         pattern = r'^\d{4}-\d{2}-\d{2}$'
-        if not re.match(pattern, str(self.creation_date)):
+        pattern2 = r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$'
+        if not (re.match(pattern, str(self.creation_date)) or re.match(pattern2, str(self.creation_date))):
             raise ValueError("Erreur : Veuillez entrer une date valide (Exemple : 2023-05-23)")
