@@ -30,6 +30,31 @@ def test_event_creation(fake_contract, fake_collaborator):
     assert event.attendees == attendees
     assert event.notes == notes
     assert event.support.id == support.id
+    
+def test_event_creation_with_no_support(fake_contract):
+    contract = fake_contract
+    start_date = "2023-02-05 14:30"
+    end_date = "2023-02-05 20:30"
+    location = "54, avenue des Agneaux, 77500 CRO-MAGNON"
+    attendees = 8
+    notes = "Quelques notes..."
+    
+    event = Event.create(
+        contract=contract,
+        start_date=start_date,
+        end_date=end_date,
+        location=location,
+        attendees=attendees,
+        notes=notes
+    )
+    
+    assert event.contract.id == contract.id
+    assert event.start_date == start_date
+    assert event.end_date == end_date
+    assert event.location == location
+    assert event.attendees == attendees
+    assert event.notes == notes
+    assert event.support == None
 
 def test_event_creation_with_wrong_contract_field(fake_collaborator):
     contract = "Wrong"
@@ -195,7 +220,7 @@ def test_event_creation_with_no_location(fake_contract, fake_collaborator):
     notes = "Quelques notes..."
     support = fake_collaborator
     
-    with pytest.raises(IntegrityError):
+    with pytest.raises(ValueError):
         Event.create(
         contract=contract,
         start_date=start_date,
