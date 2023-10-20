@@ -27,13 +27,50 @@ def test_database(monkeypatch):
     return mocked_database
 
 @pytest.fixture()
-def fake_department():
-    fake_department = department.Department.create(name="Recherche")
+def fake_department_management():
+    fake_department1 = department.Department.create(name="Management")
+    fake_department1.id = MANAGEMENT_DEPARTMENT_ID
+    # fake_department2 = department.Department.create(name="Sales")
+    # fake_department3 = department.Department.create(name="Support")
     
     def cleanup():
-        fake_department.delete_instance()
+        fake_department1.delete_instance()
+        # fake_department2.delete_instance()
+        # fake_department3.delete_instance()
     
-    yield fake_department
+    yield fake_department1
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_department_sales():
+    # fake_department1 = department.Department.create(name="Management")
+    fake_department2 = department.Department.create(name="Sales")
+    fake_department2.id = SALES_DEPARTMENT_ID
+    # fake_department3 = department.Department.create(name="Support")
+    
+    def cleanup():
+        # fake_department1.delete_instance()
+        fake_department2.delete_instance()
+        # fake_department3.delete_instance()
+    
+    yield fake_department2
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_department_support():
+    # fake_department1 = department.Department.create(name="Management")
+    # fake_department2 = department.Department.create(name="Sales")
+    fake_department3 = department.Department.create(name="Support")
+    fake_department3.id = SUPPORT_DEPARTMENT_ID
+    
+    def cleanup():
+        # fake_department1.delete_instance()
+        # fake_department2.delete_instance()
+        fake_department3.delete_instance()
+    
+    yield fake_department3
     
     cleanup()
     
@@ -49,12 +86,27 @@ def fake_company():
     cleanup()
     
 @pytest.fixture()
-def fake_collaborator(fake_department):
+def fake_collaborator_management(fake_department_management):
     fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
-                                                         name="Collaborator",
-                                                         email="test@company.fr",
+                                                         name="Manager",
+                                                         email="test@management.fr",
                                                          password="testpass",
-                                                         department=fake_department)
+                                                         department=fake_department_management)
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+    
+    yield fake_collaborator
+    
+    cleanup()
+
+@pytest.fixture()
+def fake_collaborator_sales(fake_department_sales):
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Salesman",
+                                                         email="test@sales.fr",
+                                                         password="testpass",
+                                                         department=fake_department_sales)
     
     def cleanup():
         fake_collaborator.delete_instance()
@@ -64,13 +116,28 @@ def fake_collaborator(fake_department):
     cleanup()
     
 @pytest.fixture()
-def fake_client(fake_company, fake_collaborator):
+def fake_collaborator_support(fake_department_support):
+    fake_collaborator = collaborator.Collaborator.create(first_name="Fake",
+                                                         name="Support",
+                                                         email="test@support.fr",
+                                                         password="testpass",
+                                                         department=fake_department_support)
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+    
+    yield fake_collaborator
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_client(fake_company, fake_collaborator_sales):
     fake_client = client.Client.create(first_name="Gérard",
                                        name="Hermite",
                                        email="gerard@lamer.fr",
                                        phone="0655698748",
                                        company=fake_company,
-                                       collaborator=fake_collaborator)
+                                       collaborator=fake_collaborator_sales)
     
     def cleanup():
         fake_client.delete_instance()
@@ -81,9 +148,9 @@ def fake_client(fake_company, fake_collaborator):
     
 
 @pytest.fixture()
-def fake_contract(fake_client, fake_collaborator):
+def fake_contract(fake_client, fake_collaborator_management):
     fake_contract = contract.Contract.create(client=fake_client,
-                                             collaborator=fake_collaborator,
+                                             collaborator=fake_collaborator_management,
                                              total_sum=15000)
     
     def cleanup():
@@ -95,13 +162,13 @@ def fake_contract(fake_client, fake_collaborator):
 
 
 @pytest.fixture()
-def fake_event(fake_contract, fake_collaborator):
+def fake_event(fake_contract, fake_collaborator_support):
     fake_event = event.Event.create(contract=fake_contract,
                                     start_date="2024-09-10 14:00",
                                     end_date="2024-09-10 23:00",
                                     location="55, rue des Acacias - 77093 VILLEFANTOME",
                                     attendees=8,
-                                    support=fake_collaborator.id)
+                                    support=fake_collaborator_support.id)
     
     def cleanup():
         fake_event.delete_instance()
@@ -111,13 +178,13 @@ def fake_event(fake_contract, fake_collaborator):
     cleanup()
     
 @pytest.fixture()
-def fake_event2(fake_contract, fake_collaborator):
+def fake_event2(fake_contract, fake_collaborator_support):
     fake_event = event.Event.create(contract=fake_contract,
                                     start_date="2024-09-10 14:00",
                                     end_date="2024-09-10 23:00",
                                     location="MARSEILLE",
                                     attendees=8,
-                                    support=fake_collaborator.id)
+                                    support=fake_collaborator_support.id)
     
     def cleanup():
         fake_event.delete_instance()
