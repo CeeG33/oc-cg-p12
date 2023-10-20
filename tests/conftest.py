@@ -101,7 +101,23 @@ def fake_event(fake_contract, fake_collaborator):
                                     end_date="2024-09-10 23:00",
                                     location="55, rue des Acacias - 77093 VILLEFANTOME",
                                     attendees=8,
-                                    support=fake_collaborator)
+                                    support=fake_collaborator.id)
+    
+    def cleanup():
+        fake_event.delete_instance()
+    
+    yield fake_event
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_event2(fake_contract, fake_collaborator):
+    fake_event = event.Event.create(contract=fake_contract,
+                                    start_date="2024-09-10 14:00",
+                                    end_date="2024-09-10 23:00",
+                                    location="MARSEILLE",
+                                    attendees=8,
+                                    support=fake_collaborator.id)
     
     def cleanup():
         fake_event.delete_instance()
@@ -110,6 +126,37 @@ def fake_event(fake_contract, fake_collaborator):
     
     cleanup()
 
+@pytest.fixture()
+def fake_event_no_support(fake_contract):
+    fake_event = event.Event.create(contract=fake_contract,
+                                    start_date="2024-03-25 08:00",
+                                    end_date="2024-03-25 12:00",
+                                    location="3, rue de Paris - 75000 PARIS",
+                                    attendees=15,
+                                    support=None)
+    
+    def cleanup():
+        fake_event.delete_instance()
+    
+    yield fake_event
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_event_no_support_2(fake_contract):
+    fake_event = event.Event.create(contract=fake_contract,
+                                    start_date="2024-03-25 08:00",
+                                    end_date="2024-03-25 12:00",
+                                    location="23, av des Champs Elysées - 75008 PARIS",
+                                    attendees=15,
+                                    support=None)
+    
+    def cleanup():
+        fake_event.delete_instance()
+    
+    yield fake_event
+    
+    cleanup()
 
 @pytest.fixture()
 def valid_token(fake_collaborator):
@@ -214,10 +261,10 @@ def monkey_token_check_fake_sales(monkeypatch):
     monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
     
 @pytest.fixture()
-def monkey_token_check_support(monkeypatch):
+def monkey_token_check_support(monkeypatch, fake_event):
     def return_monkey_token():
         return (True, {
-            "collaborator_id": 1,
+            "collaborator_id": fake_event.support.id,
             "email": "etoile@mer.fr",
             "department_id": SUPPORT_DEPARTMENT_ID})
     

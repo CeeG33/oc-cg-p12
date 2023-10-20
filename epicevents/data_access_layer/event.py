@@ -13,16 +13,16 @@ class Event(BaseModel):
     location = CharField(max_length=150)
     attendees = IntegerField()
     notes = TextField(null=True)
-    support = ForeignKeyField(Collaborator, backref="associated_support", on_delete="SET NULL")
+    support = ForeignKeyField(Collaborator, backref="associated_support", on_delete="SET NULL", null=True)
     
     def save(self, *args, **kwargs):
-        if not self.contract and self.start_date and self.end_date and self.location:
+        if not (self.contract and self.start_date and self.end_date and self.location):
             raise ValueError("Erreur : Veuillez renseigner les détails de l'évènement.")
         
         if not isinstance(self.contract, int) and self.contract.id <= 0:
             raise ValueError("Erreur : Veuillez entrer un identifiant de contrat valide.")
         
-        if not isinstance(self.support, int) and self.support.id <= 0:
+        if self.support is not None and not isinstance(self.support, Collaborator):
             raise ValueError("Erreur : Veuillez entrer un identifiant de collaborateur valide.")
         
         if not isinstance(self.attendees, int) or int(self.attendees) <= 1:

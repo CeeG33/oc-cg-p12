@@ -29,6 +29,7 @@ def list():
     else:
         typer.echo("Veuillez vous authentifier et réessayer.")
 
+
 @app.command()
 def create(client: Annotated[int, typer.Argument()],
            collaborator: Annotated[int, typer.Argument()], 
@@ -52,7 +53,6 @@ def create(client: Annotated[int, typer.Argument()],
         typer.echo("Veuillez vous authentifier et réessayer.")
 
 
-## CONTINUER ICI
 @app.command()
 def update(contract_id: Annotated[int, typer.Argument()],
            new_value: Annotated[str, typer.Argument()], 
@@ -131,3 +131,7 @@ def update(contract_id: Annotated[int, typer.Argument()],
     else:
         print("Veuillez vous authentifier et réessayer.")
         raise typer.Exit()
+
+
+if __name__ == "__main__":
+    app()
