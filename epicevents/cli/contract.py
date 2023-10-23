@@ -21,13 +21,13 @@ def list():
         
         for contract in queryset:
             if len(Contract) == 0:
-                typer.echo("La base de donnée ne contient aucun contrat.")
+                print("La base de donnée ne contient aucun contrat.")
             
             else:
-                typer.echo(f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}")
+                print(f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}")
     
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
 
 
 @app.command()
@@ -44,13 +44,13 @@ def create(client: Annotated[int, typer.Argument()],
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             Contract.create(client=client, collaborator=collaborator, total_sum=total_sum, amount_due=amount_due, creation_date=creation_date, signed=signed)
-            typer.echo("Le contrat a été créé avec succès.")
+            print("Le contrat a été créé avec succès.")
         
         else:
-            typer.echo("Action restreinte.")
+            print("Action restreinte.")
         
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
 
 
 @app.command()
@@ -74,7 +74,7 @@ def update(contract_id: Annotated[int, typer.Argument()],
             print(f"Aucun contrat trouvé avec l'ID n°{contract_id}.")
             raise typer.Exit()
                 
-        if (int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID) or (int(collaborator_department) == SALES_DEPARTMENT_ID and int(collaborator_id) == contract.collaborator.id):
+        if (int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID) or (int(collaborator_department) == SALES_DEPARTMENT_ID and int(collaborator_id) == contract.client.collaborator.id):
 
             if client:
                 client_check = Client.get_or_none(Client.id == new_value)
@@ -128,6 +128,40 @@ def update(contract_id: Annotated[int, typer.Argument()],
             print("Action restreinte.")
             raise typer.Exit()
         
+    else:
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
+
+
+@app.command()
+def filter(ns: Annotated[bool, typer.Option()] = False,
+           u: Annotated[bool, typer.Option()] = False):
+    token_check = clicollaborator._verify_token()
+    if token_check:
+        collaborator_department = token_check[1]["department_id"]
+        
+        if int(collaborator_department) == SALES_DEPARTMENT_ID:
+            if ns:
+                queryset = Contract.select().where(Contract.signed == False)
+                
+                for contract in queryset:
+                    print(f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}")
+            
+            if u:
+                queryset = Contract.select().where((Contract.amount_due > 0) |
+                                                   (Contract.amount_due == None))
+                
+                for contract in queryset:
+                    print(f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}")
+            
+            elif not (ns or u):
+                print("Vous n'avez pas sélectionné de filtre à appliquer.")
+                raise typer.Exit()
+            
+        else:
+            print("Action restreinte.")
+            raise typer.Exit()
+            
     else:
         print("Veuillez vous authentifier et réessayer.")
         raise typer.Exit()

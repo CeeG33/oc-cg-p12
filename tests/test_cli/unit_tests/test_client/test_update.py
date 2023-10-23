@@ -2,142 +2,129 @@ import pytest
 from datetime import datetime
 from typer import Exit
 from peewee import DoesNotExist
-from epicevents.data_access_layer.event import Event
-from epicevents.cli.event import update
+from epicevents.data_access_layer.client import Client
+from epicevents.cli.client import update
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
-# def test_contract_update_successful(monkey_token_check_management, fake_event, fake_contract, capsys):
-#     update(fake_event.id, fake_contract.id, contract=True)
+def test_company_update(monkey_token_check_correct_sales, fake_client, fake_company2, capsys):
+    company = fake_company2.id
+    update(fake_client.id, company, company=True)
 
-#     updated_event = Event.get(Event.id == fake_event.id)
+    updated_client = Client.get(Client.id == fake_client.id)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert updated_event.contract.id == fake_contract.id
-#     assert updated_event.contract.total_sum == fake_contract.total_sum
-#     assert f"Le champ 'Contrat' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
-    
-# def test_contract_update_fails_with_wrong_id(monkey_token_check_management, fake_event, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, -50, contract=True)
-    
-#     captured = capsys.readouterr()
-    
-#     assert "Veuillez entrer un numéro de contrat valide." in captured.out.strip()
-    
-# def test_support_update_successful(monkey_token_check_management, fake_department_management, fake_department_sales, fake_department_support, fake_event, fake_collaborator_support2, capsys):
-#     update(fake_event.id, fake_collaborator_support2.id, support=True)
-    
-#     updated_event = Event.get(Event.id == fake_event.id)
-    
-#     captured = capsys.readouterr()
-    
-#     assert updated_event.support.id == fake_collaborator_support2.id
-#     assert updated_event.support.first_name == fake_collaborator_support2.first_name
-#     assert f"Le champ 'Assistant en charge' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
+    assert updated_client.company.id == company
+    assert f"Le champ 'Entreprise' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
 
-# def test_support_update_fails_with_wrong_id(monkey_token_check_management, fake_event, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, -50, support=True)
+def test_company_not_found(monkey_token_check_correct_sales, fake_client, capsys):
+    company = -100
     
-#     captured = capsys.readouterr()
-    
-#     assert "Veuillez entrer un numéro de collaborateur valide et faisant partie du département Support." in captured.out.strip()
-    
-# def test_support_update_fails_with_not_support_collaborator(monkey_token_check_management, fake_event, fake_department_management, fake_department_sales,  fake_collaborator_sales, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, fake_collaborator_sales.id, support=True)
-    
-#     captured = capsys.readouterr()
-    
-#     assert "Veuillez entrer un numéro de collaborateur valide et faisant partie du département Support." in captured.out.strip()
+    with pytest.raises(Exit):
+        update(fake_client.id, company, company=True)
 
-# def test_start_date_update_successful(monkey_token_check_management, fake_event, capsys):
-#     new_start_date = "2024-01-25 15:00"
-#     update(fake_event.id, new_start_date, start_date=True)
+    updated_client = Client.get(Client.id == fake_client.id)
+    
+    captured = capsys.readouterr()
+    
+    assert updated_client.company.id == fake_client.company.id
+    assert "Veuillez entrer un numéro d'entreprise valide." in captured.out.strip()
 
-#     updated_event = Event.get(Event.id == fake_event.id)
-    
-#     captured = capsys.readouterr()
-    
-#     assert updated_event.start_date == new_start_date
-#     assert f"Le champ 'Date de début' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
-#     assert "Veuillez également penser à modifier la date de fin." in captured.out.strip()
+def test_first_name_update(monkey_token_check_correct_sales, fake_client, capsys):
+    first_name = "Gégé"
+    update(fake_client.id, first_name, first_name=True)
 
-# def test_end_date_update_successful(monkey_token_check_management, fake_event, capsys):
-#     new_end_date = "2024-01-25 20:00"
-#     update(fake_event.id, new_end_date, end_date=True)
+    updated_client = Client.get(Client.id == fake_client.id)
+    
+    captured = capsys.readouterr()
+    
+    assert updated_client.first_name == first_name
+    assert f"Le champ 'Prénom' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
+    
+def test_name_update(monkey_token_check_correct_sales, fake_client, capsys):
+    name = "Lanbrouille"
+    update(fake_client.id, name, name=True)
 
-#     updated_event = Event.get(Event.id == fake_event.id)
+    updated_client = Client.get(Client.id == fake_client.id)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert updated_event.end_date == new_end_date
-#     assert f"Le champ 'Date de fin' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
-#     assert "Avez-vous également pensé à modifier la date de début ?" in captured.out.strip()
+    assert updated_client.name == name
+    assert f"Le champ 'Nom' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
     
-# def test_location_update_successful(monkey_token_check_management, fake_event, capsys):
-#     new_location = "54, rue des Castors - 75005 PARIS"
-#     update(fake_event.id, new_location, location=True)
-    
-#     updated_event = Event.get(Event.id == fake_event.id)
-    
-#     captured = capsys.readouterr()
-    
-#     assert updated_event.location == new_location
-#     assert f"Le champ 'Localisation' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
-    
-# def test_attendees_update_successful(monkey_token_check_management, fake_event, capsys):
-#     new_attendees = 15
-#     update(fake_event.id, new_attendees, attendees=True)
+def test_email_update(monkey_token_check_correct_sales, fake_client, capsys):
+    email = "gege.lanbrouille@dede.fr"
+    update(fake_client.id, email, email=True)
 
-#     updated_event = Event.get(Event.id == fake_event.id)
+    updated_client = Client.get(Client.id == fake_client.id)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert updated_event.attendees == new_attendees
-#     assert f"Le champ 'Nombre de participants' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
+    assert updated_client.email == email
+    assert f"Le champ 'Email' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
     
-# def test_notes_update_successful(monkey_token_check_management, fake_event, capsys):
-#     new_notes = "Test notes"
-#     update(fake_event.id, new_notes, notes=True)
+def test_phone_update(monkey_token_check_correct_sales, fake_client, capsys):
+    phone = "0669654989"
+    update(fake_client.id, phone, phone=True)
 
-#     updated_event = Event.get(Event.id == fake_event.id)
+    updated_client = Client.get(Client.id == fake_client.id)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert updated_event.notes == new_notes
-#     assert f"Le champ 'Notes' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
+    assert updated_client.phone == phone
+    assert f"Le champ 'Téléphone' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
     
-# def test_update_fails_without_attribute(monkey_token_check_management, fake_event, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, "Test")
+def test_creation_date_update(monkey_token_check_correct_sales, fake_client, capsys):
+    creation_date = "2024-05-26"
+    update(fake_client.id, creation_date, creation_date=True)
+
+    updated_client = Client.get(Client.id == fake_client.id)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert "Vous n'avez pas sélectionné d'attribut à modifier." in captured.out.strip()
+    assert updated_client.creation_date == datetime(2024, 5, 26)
+    assert f"Le champ 'Date de création' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
     
-# def test_update_not_authorized_for_sales_collaborator(monkey_token_check_correct_sales, fake_event, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, "Test notes", notes=True)
+def test_last_update_update(monkey_token_check_correct_sales, fake_client, capsys):
+    last_update = "2024-07-26"
+    update(fake_client.id, last_update, last_update=True)
+
+    updated_client = Client.get(Client.id == fake_client.id)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert "Action restreinte." in captured.out.strip()
+    assert updated_client.last_update == datetime(2024, 7, 26)
+    assert f"Le champ 'Dernier contact' du client n°{fake_client.id} a été mis à jour avec succès." in captured.out.strip()
     
-# def test_update_not_authorized_for_support_collaborator(monkey_token_check_support_gargamel, fake_event, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, "Test notes", notes=True)
+def test_update_fails_without_attribute(monkey_token_check_correct_sales, fake_client, capsys):
+    with pytest.raises(Exit):
+        update(fake_client.id, "Test")
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert "Action restreinte." in captured.out.strip()
+    assert "Vous n'avez pas sélectionné d'attribut à modifier." in captured.out.strip()
     
-# def test_update_fails_without_authentication(monkey_token_check_false, fake_event, capsys):
-#     with pytest.raises(Exit):
-#         update(fake_event.id, "Test notes", notes=True)
+def test_update_not_authorized_for_support_collaborator(monkey_token_check_support_gargamel, fake_client, capsys):
+    with pytest.raises(Exit):
+        update(fake_client.id, "Test", name=True)
     
-#     captured = capsys.readouterr()
+    captured = capsys.readouterr()
     
-#     assert "Veuillez vous authentifier et réessayer." in captured.out.strip()
+    assert "Action restreinte." in captured.out.strip()
+    
+def test_update_not_authorized_for_sales_collaborator(monkey_token_check_correct_sales_plankton, fake_client, capsys):
+    with pytest.raises(Exit):
+        update(fake_client.id, "Test", name=True)
+    
+    captured = capsys.readouterr()
+    
+    assert "Action restreinte." in captured.out.strip()
+    
+def test_update_fails_without_authentication(monkey_token_check_false, fake_client, capsys):
+    with pytest.raises(Exit):
+        update(fake_client.id, "Test", name=True)
+    
+    captured = capsys.readouterr()
+    
+    assert "Veuillez vous authentifier et réessayer." in captured.out.strip()

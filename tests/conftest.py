@@ -75,6 +75,17 @@ def fake_company():
     yield fake_company
     
     cleanup()
+
+@pytest.fixture()
+def fake_company2():
+    fake_company = company.Company.create(name="Danone")
+    
+    def cleanup():
+        fake_company.delete_instance()
+    
+    yield fake_company
+    
+    cleanup()
     
 @pytest.fixture()
 def fake_collaborator_management():
@@ -181,12 +192,43 @@ def fake_contract(fake_client, fake_collaborator_sales):
     yield fake_contract
     
     cleanup()
+
+@pytest.fixture()
+def fake_contract2(fake_client, fake_collaborator_sales):
+    fake_contract = contract.Contract.create(client=fake_client.id,
+                                             collaborator=fake_collaborator_sales.id,
+                                             total_sum=12000,
+                                             amount_due=10000,
+                                             signed=True)
+    
+    def cleanup():
+        fake_contract.delete_instance()
+    
+    yield fake_contract
+    
+    cleanup()
+    
+@pytest.fixture()
+def fake_contract3(fake_client, fake_collaborator_sales):
+    fake_contract = contract.Contract.create(client=fake_client.id,
+                                             collaborator=fake_collaborator_sales.id,
+                                             total_sum=24000,
+                                             amount_due=0,
+                                             signed=True)
+    
+    def cleanup():
+        fake_contract.delete_instance()
+    
+    yield fake_contract
+    
+    cleanup()
     
 @pytest.fixture()
 def fake_contract_unsigned(fake_client, fake_collaborator_sales):
     fake_contract = contract.Contract.create(client=fake_client.id,
                                              collaborator=fake_collaborator_sales.id,
-                                             total_sum=15000)
+                                             total_sum=3200,
+                                             amount_due=3200)
     
     def cleanup():
         fake_contract.delete_instance()

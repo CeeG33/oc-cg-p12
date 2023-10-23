@@ -99,7 +99,7 @@ def update(client_id: Annotated[int, typer.Argument()],
                     print(f"Le champ 'Entreprise' du client n°{client_id} a été mis à jour avec succès.")
                 
                 else:
-                    print("Veuillez entrer un numéro de client valide.")
+                    print("Veuillez entrer un numéro d'entreprise valide.")
                     raise typer.Exit(code=1)
                 
             elif first_name:

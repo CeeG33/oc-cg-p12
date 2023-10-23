@@ -45,10 +45,11 @@ class Client(BaseModel):
         
     def _validate_date(self):
         pattern = r'^\d{4}-\d{2}-\d{2}$'
-        if not re.match(pattern, str(self.creation_date)):
+        pattern2 = r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$'
+        if not (re.match(pattern, str(self.creation_date)) or re.match(pattern2, str(self.creation_date))):
             raise ValueError("Erreur : Veuillez entrer une date valide (Exemple : 2023-05-23)")
         
         if self.last_update:
-            if not re.match(pattern, str(self.last_update)):
+            if not (re.match(pattern, str(self.last_update)) or re.match(pattern2, str(self.last_update))):
                 raise ValueError("Erreur : Veuillez entrer une date valide (Exemple : 2023-05-23)")
         
