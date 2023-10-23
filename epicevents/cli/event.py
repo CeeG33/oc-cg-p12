@@ -117,11 +117,13 @@ def update(event_id: Annotated[int, typer.Argument()],
                 event.start_date = new_value
                 event.save()
                 print(f"Le champ 'Date de début' de l'évènement n°{event_id} a été mis à jour avec succès.")
+                print("Veuillez également penser à modifier la date de fin.")
                 
             elif end_date:
                 event.end_date = new_value
                 event.save()
                 print(f"Le champ 'Date de fin' de l'évènement n°{event_id} a été mis à jour avec succès.")
+                print("Avez-vous également pensé à modifier la date de début ?")
                 
             elif location:
                 event.location = new_value

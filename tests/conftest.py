@@ -131,6 +131,21 @@ def fake_collaborator_support(fake_department_support):
     cleanup()
     
 @pytest.fixture()
+def fake_collaborator_support2(fake_department_support):
+    fake_collaborator = collaborator.Collaborator.create(first_name="Gargamel",
+                                                         name="Support",
+                                                         email="gargamel@support.fr",
+                                                         password="testgargamel",
+                                                         department=fake_department_support)
+    
+    def cleanup():
+        fake_collaborator.delete_instance()
+    
+    yield fake_collaborator
+    
+    cleanup()
+    
+@pytest.fixture()
 def fake_client(fake_company, fake_collaborator_sales):
     fake_client = client.Client.create(first_name="Gérard",
                                        name="Hermite",
@@ -333,6 +348,16 @@ def monkey_token_check_support(monkeypatch, fake_event):
         return (True, {
             "collaborator_id": fake_event.support.id,
             "email": "etoile@mer.fr",
+            "department_id": SUPPORT_DEPARTMENT_ID})
+    
+    monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
+    
+@pytest.fixture()
+def monkey_token_check_support_gargamel(monkeypatch, fake_collaborator_support2):
+    def return_monkey_token():
+        return (True, {
+            "collaborator_id": fake_collaborator_support2.id,
+            "email": fake_collaborator_support2.email,
             "department_id": SUPPORT_DEPARTMENT_ID})
     
     monkeypatch.setattr(clicollaborator, "_verify_token", return_monkey_token)
