@@ -37,12 +37,14 @@ def _verify_token():
     try:
         decoded_payload = jwt.decode(_read_token(), key=SECRET_KEY, algorithms=["HS256"])
     except ExpiredSignatureError:
-        raise ExpiredSignatureError("Token expiré, veuillez vous réauthentifier.")
+        print("Token expiré, veuillez vous réauthentifier.")
+        raise ExpiredSignatureError
     
     collaborator_id = decoded_payload.get("collaborator_id")
     
     if collaborator_id is None or not isinstance(int(collaborator_id), int):
-        raise InvalidTokenError("Le token n'est pas valide, veuillez vous réauthentifier.")
+        print("Le token n'est pas valide, veuillez vous réauthentifier.")
+        raise InvalidTokenError
     
     return True, decoded_payload
 
@@ -80,15 +82,18 @@ def list():
             
             for user in queryset:
                 if len(Collaborator) == 0:
-                    typer.echo("La base de donnée ne contient aucun collaborateur.")
+                    print("La base de donnée ne contient aucun collaborateur.")
+                    raise typer.Exit()
                 
-                typer.echo(f"[ID] : {user.id} -- [Prénom] : {user.first_name} -- [Nom] : {user.name} -- [Email] : {user.email} -- [Departement] : {user.department.name}")
+                print(f"[ID] : {user.id} -- [Prénom] : {user.first_name} -- [Nom] : {user.name} -- [Email] : {user.email} -- [Departement] : {user.department.name}")
         
         else:
-            typer.echo("Action restreinte.")
+            print("Action restreinte.")
+            raise typer.Exit()
     
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 @app.command()
@@ -99,13 +104,15 @@ def create(first_name: str, name: str, email: str, password: str, department: in
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             Collaborator.create(first_name=first_name, name=name, email=email, password=password, department=department)
-            typer.echo(f"Le collaborateur {first_name} {name} a été créé avec succès.")
+            print(f"Le collaborateur {first_name} {name} a été créé avec succès.")
         
         else:
-            typer.echo("Action restreinte.")
+            print("Action restreinte.")
+            raise typer.Exit()
         
     else:
-        typer.echo("Veuillez vous authentifier et réessayer.")
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 @app.command()

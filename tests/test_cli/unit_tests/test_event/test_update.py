@@ -26,15 +26,15 @@ def test_contract_update_fails_with_wrong_id(monkey_token_check_management, fake
     
     assert "Veuillez entrer un numéro de contrat valide." in captured.out.strip()
     
-def test_support_update_successful(monkey_token_check_management, fake_event, fake_collaborator_support, capsys):
-    update(fake_event.id, fake_collaborator_support.id, support=True)
-
+def test_support_update_successful(monkey_token_check_management, fake_department_management, fake_department_sales, fake_department_support, fake_event, fake_collaborator_support2, capsys):
+    update(fake_event.id, fake_collaborator_support2.id, support=True)
+    
     updated_event = Event.get(Event.id == fake_event.id)
     
     captured = capsys.readouterr()
     
-    assert updated_event.support.id == fake_collaborator_support.id
-    assert updated_event.support.first_name == fake_collaborator_support.first_name
+    assert updated_event.support.id == fake_collaborator_support2.id
+    assert updated_event.support.first_name == fake_collaborator_support2.first_name
     assert f"Le champ 'Assistant en charge' de l'évènement n°{fake_event.id} a été mis à jour avec succès." in captured.out.strip()
 
 def test_support_update_fails_with_wrong_id(monkey_token_check_management, fake_event, capsys):
@@ -45,7 +45,7 @@ def test_support_update_fails_with_wrong_id(monkey_token_check_management, fake_
     
     assert "Veuillez entrer un numéro de collaborateur valide et faisant partie du département Support." in captured.out.strip()
     
-def test_support_update_fails_with_not_support_collaborator(monkey_token_check_management, fake_event, fake_collaborator_sales, capsys):
+def test_support_update_fails_with_not_support_collaborator(monkey_token_check_management, fake_event, fake_department_management, fake_department_sales,  fake_collaborator_sales, capsys):
     with pytest.raises(Exit):
         update(fake_event.id, fake_collaborator_sales.id, support=True)
     

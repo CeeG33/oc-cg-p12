@@ -1,35 +1,30 @@
 import pytest
+from typer import Exit
 from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.cli.collaborator import list, _memorize_token, _verify_token
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
-def test_list_successful(monkey_dotenv, valid_token, capsys):
-    _memorize_token(valid_token)
-    
+def test_list_successful(monkey_token_check_management, fake_department_management, capsys):
     list()
 
     captured = capsys.readouterr()
     
     assert "[ID]" in captured.out.strip() 
 
-def test_list_token_fails(monkey_dotenv, wrong_token, capsys):
-    with pytest.raises(InvalidTokenError):
-        _memorize_token(wrong_token)
+def test_list_not_allowed(monkey_token_check_correct_sales, capsys):
+    with pytest.raises(Exit):
         list()
     
-def test_list_wrong_department(monkey_dotenv, fake_department, wrong_department_token, capsys):
-    _memorize_token(wrong_department_token)
-    
-    list()
-
     captured = capsys.readouterr()
     
-    assert "Action restreinte." in captured.out.strip()
+    assert "Action restreinte." in captured.out.strip() 
     
-def test_list_token_expired(monkey_dotenv, expired_token, fake_department, capsys):
-    with pytest.raises(ExpiredSignatureError):
-        _memorize_token(expired_token)
-        
+def test_list_fails_with_wrong_token(monkey_token_check_false, capsys):
+    with pytest.raises(Exit):
         list()
+    
+    captured = capsys.readouterr()
+    
+    assert "Veuillez vous authentifier et réessayer." in captured.out.strip() 
     

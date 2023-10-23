@@ -3,13 +3,13 @@ from datetime import datetime
 from peewee import DoesNotExist
 from epicevents.data_access_layer.client import Client
 
-def test_client_creation(fake_company, fake_collaborator):
+def test_client_creation(fake_company, fake_collaborator_management):
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
     phone = "0654987852"
     company = fake_company
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_management
     
     client = Client.create(
         first_name=first_name,
@@ -30,7 +30,7 @@ def test_client_creation(fake_company, fake_collaborator):
     
     client.delete_instance()
     
-def test_client_creation_with_wrong_first_name(fake_company, fake_collaborator):
+def test_client_creation_with_wrong_first_name(fake_company, fake_collaborator_management):
     first_name = "465456"
     name = "Test"
     email = "test@client.fr"
@@ -38,7 +38,7 @@ def test_client_creation_with_wrong_first_name(fake_company, fake_collaborator):
     company = fake_company
     creation_date = datetime.now().date()
     last_update = None
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_management
     
     with pytest.raises(ValueError):
         Client.create(
@@ -52,7 +52,7 @@ def test_client_creation_with_wrong_first_name(fake_company, fake_collaborator):
         collaborator=collaborator
         )
     
-def test_client_creation_with_wrong_name(fake_company, fake_collaborator):
+def test_client_creation_with_wrong_name(fake_company, fake_collaborator_management):
     first_name = "Client"
     name = "465456"
     email = "test@client.fr"
@@ -60,7 +60,7 @@ def test_client_creation_with_wrong_name(fake_company, fake_collaborator):
     company = fake_company
     creation_date = datetime.now().date()
     last_update = None
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_management
     
     with pytest.raises(ValueError):
         Client.create(
@@ -74,7 +74,7 @@ def test_client_creation_with_wrong_name(fake_company, fake_collaborator):
         collaborator=collaborator
         )
     
-def test_client_creation_with_wrong_email(fake_company, fake_collaborator):
+def test_client_creation_with_wrong_email(fake_company, fake_collaborator_management):
     first_name = "Client"
     name = "Test"
     email = "5465465"
@@ -82,7 +82,7 @@ def test_client_creation_with_wrong_email(fake_company, fake_collaborator):
     company = fake_company
     creation_date = datetime.now().date()
     last_update = None
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_management
     
     with pytest.raises(ValueError):
         Client.create(
@@ -96,7 +96,7 @@ def test_client_creation_with_wrong_email(fake_company, fake_collaborator):
         collaborator=collaborator
         )
 
-def test_client_creation_with_wrong_company_id(fake_collaborator):
+def test_client_creation_with_wrong_company_id(fake_collaborator_management):
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
@@ -104,7 +104,7 @@ def test_client_creation_with_wrong_company_id(fake_collaborator):
     company = "Error"
     creation_date = datetime.now().date()
     last_update = None
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_management
     
     with pytest.raises(DoesNotExist):
         Client.create(
@@ -118,7 +118,7 @@ def test_client_creation_with_wrong_company_id(fake_collaborator):
         collaborator=collaborator
         )
 
-def test_client_creation_with_wrong_creation_date(fake_company, fake_collaborator):
+def test_client_creation_with_wrong_creation_date(fake_company, fake_collaborator_management):
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
@@ -126,7 +126,7 @@ def test_client_creation_with_wrong_creation_date(fake_company, fake_collaborato
     company = fake_company
     creation_date = "Error"
     last_update = None
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_management
     
     with pytest.raises(ValueError):
         Client.create(

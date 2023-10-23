@@ -21,13 +21,13 @@ def list():
         
         for event in queryset:
             if len(Event) == 0:
-                typer.echo("La base de donnée ne contient aucun évènement.")
+                print("La base de donnée ne contient aucun évènement.")
             
             else:
-                typer.echo(f"[ID] : {event.id} -- [ID Contrat] : {event.contract.id} -- [Client] : {event.contract.client.first_name} {event.contract.client.name} -- [Date de début] : {event.start_date} -- [Date de fin] : {event.end_date} -- [Localisation] : {event.location} -- [Nombre de participants] : {event.attendees} --  [Notes] : {event.notes} -- [Assistant en charge] : {event.support.first_name} {event.support.name}")
+                print(f"[ID] : {event.id} -- [ID Contrat] : {event.contract.id} -- [Client] : {event.contract.client.first_name} {event.contract.client.name} -- [Date de début] : {event.start_date} -- [Date de fin] : {event.end_date} -- [Localisation] : {event.location} -- [Nombre de participants] : {event.attendees} --  [Notes] : {event.notes} -- [Assistant en charge] : {event.support.first_name} {event.support.name}")
     
     else:
-        typer.echo("Veuillez vous authentifier.")
+        print("Veuillez vous authentifier.")
 
 
 @app.command()
@@ -105,7 +105,7 @@ def update(event_id: Annotated[int, typer.Argument()],
                 support_check = Collaborator.get_or_none(Collaborator.id == new_value)
                 
                 if support_check and support_check.department.id == SUPPORT_DEPARTMENT_ID:
-                    event.collaborator = new_value
+                    event.support = new_value
                     event.save()
                     print(f"Le champ 'Assistant en charge' de l'évènement n°{event_id} a été mis à jour avec succès.")
                 
@@ -144,6 +144,49 @@ def update(event_id: Annotated[int, typer.Argument()],
                 print("Vous n'avez pas sélectionné d'attribut à modifier.")
                 raise typer.Exit()
             
+        else:
+            print("Action restreinte.")
+            raise typer.Exit()
+        
+    else:
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
+
+
+@app.command()
+def create(contract: Annotated[int, typer.Argument()],
+           start_date: Annotated[str, typer.Argument()],
+           end_date: Annotated[str, typer.Argument()],
+           location: Annotated[str, typer.Argument()],
+           attendees: Annotated[int, typer.Argument()],
+           notes: Annotated[str, typer.Argument()] = "",
+           support: Annotated[int, typer.Argument()] = None
+        ):
+    token_check = clicollaborator._verify_token()
+    if token_check:
+        collaborator_department = token_check[1]["department_id"]
+        collaborator_id = token_check[1]["collaborator_id"]
+        
+        if int(collaborator_department) == SALES_DEPARTMENT_ID:
+            target_contract = Contract.get_or_none(Contract.id == contract)
+                
+            if target_contract:
+                if target_contract.client.collaborator.id != collaborator_id:
+                    print("Vous ne pouvez pas créer d'évènement pour un client qui ne vous est pas affecté.")
+                    raise typer.Exit()
+        
+                if target_contract.signed == False:
+                    print("Vous ne pouvez pas créer d'évènement pour un contrat qui n'est pas signé.")
+                    raise typer.Exit()
+            
+            else:
+                print("Veuillez entrer un numéro de contrat valide.")
+                raise typer.Exit(code=1)
+            
+            
+            Event.create(contract=target_contract.id, start_date=start_date, end_date=end_date, location=location, attendees=attendees, notes=notes, support=support)
+            print("L'évènement a été créé avec succès.")
+        
         else:
             print("Action restreinte.")
             raise typer.Exit()

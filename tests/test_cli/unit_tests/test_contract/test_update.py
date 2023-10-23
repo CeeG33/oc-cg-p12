@@ -31,9 +31,9 @@ def test_client_update_fails_with_wrong_id(monkey_token_check_management, fake_c
     
     assert "Veuillez entrer un numéro de client valide." in captured.out.strip()
     
-def test_collaborator_update_successful(monkey_token_check_management, fake_contract, fake_collaborator, capsys):
+def test_collaborator_update_successful(monkey_token_check_management, fake_contract, fake_collaborator_management, capsys):
     contract = fake_contract
-    new_collaborator = fake_collaborator
+    new_collaborator = fake_collaborator_management
     
     update(contract.id, new_collaborator.id, collaborator=True)
 

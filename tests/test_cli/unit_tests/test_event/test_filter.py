@@ -18,7 +18,7 @@ def test_filter_support_with_support_collaborator_successful(monkey_token_check_
 
     captured = capsys.readouterr()
     
-    assert "[Assistant en charge] : Fake Collaborator" in captured.out.strip()
+    assert "[Assistant en charge] : Fake Support" in captured.out.strip()
     assert "55, rue des Acacias - 77093 VILLEFANTOME" in captured.out.strip()
     assert "MARSEILLE" in captured.out.strip()
     

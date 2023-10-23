@@ -40,7 +40,7 @@ class Collaborator(BaseModel):
         collaborator_data = {
             "collaborator_id" : f"{self.id}",
             "email": f"{self.email}",
-            "department_id": f"{self.department}",
+            "department_id": f"{self.department.id}",
             "exp": datetime.utcnow() + timedelta(hours=1)
         }
     

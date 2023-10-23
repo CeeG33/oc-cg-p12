@@ -5,9 +5,9 @@ from epicevents.cli.contract import create
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
-def test_creation_successful(monkey_token_check_management, fake_client, fake_collaborator, capsys):
+def test_creation_successful(monkey_token_check_management, fake_client, fake_collaborator_sales, capsys):
     client = fake_client
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_sales
     create(client=client.id,
            collaborator=collaborator.id,
            total_sum=30000)
@@ -26,9 +26,9 @@ def test_creation_successful(monkey_token_check_management, fake_client, fake_co
     
     created_contract.delete_instance()
     
-def test_creation_with_optional_arguments_successful(monkey_token_check_management, fake_client, fake_collaborator, capsys):
+def test_creation_with_optional_arguments_successful(monkey_token_check_management, fake_client, fake_collaborator_sales, capsys):
     client = fake_client
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_sales
     create(client=client.id,
            collaborator=collaborator.id,
            total_sum=15000,
@@ -50,9 +50,9 @@ def test_creation_with_optional_arguments_successful(monkey_token_check_manageme
     
     created_contract.delete_instance()
     
-def test_creation_not_authorized(monkey_token_check_correct_sales, fake_client, fake_collaborator, capsys):
+def test_creation_not_authorized(monkey_token_check_correct_sales, fake_client, fake_collaborator_sales, capsys):
     client = fake_client
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_sales
     created_contract = create(client=client.id,
            collaborator=collaborator.id,
            total_sum=15000,
@@ -65,9 +65,9 @@ def test_creation_not_authorized(monkey_token_check_correct_sales, fake_client, 
     assert created_contract == None
     assert "Action restreinte." in captured.out.strip()
     
-def test_creation_fails_if_not_authenticated(monkey_token_check_false, fake_client, fake_collaborator, capsys):
+def test_creation_fails_if_not_authenticated(monkey_token_check_false, fake_client, fake_collaborator_sales, capsys):
     client = fake_client
-    collaborator = fake_collaborator
+    collaborator = fake_collaborator_sales
     create(client=client.id,
            collaborator=collaborator.id,
            total_sum=15000,

@@ -8,8 +8,8 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 ph = PasswordHasher()
 
-def test_collaborator_delete_successful(monkey_token_check_management, fake_collaborator, capsys):
-    collaborator = fake_collaborator
+def test_collaborator_delete_successful(monkey_token_check_management, fake_collaborator_management, capsys):
+    collaborator = fake_collaborator_management
     delete(collaborator.id)
 
     updated_collaborator = Collaborator.get_or_none(Collaborator.id == collaborator.id)
@@ -28,8 +28,8 @@ def test_collaborator_deletion_fails_with_wrong_collaborator_id(monkey_token_che
     
     assert f"Aucun collaborateur trouvé avec l'ID n°{fake_id}." in captured.out.strip()
     
-def test_collaborator_update_not_authorized(monkey_token_check_correct_sales, fake_collaborator, capsys):
-    collaborator = fake_collaborator
+def test_collaborator_deletion_not_authorized(monkey_token_check_correct_sales, fake_collaborator_management, capsys):
+    collaborator = fake_collaborator_management
     
     with pytest.raises(Exit):
         delete(collaborator.id)
@@ -38,8 +38,8 @@ def test_collaborator_update_not_authorized(monkey_token_check_correct_sales, fa
     
     assert "Action restreinte." in captured.out.strip()
     
-def test_collaborator_update_fails_without_authentication(monkey_token_check_false, fake_collaborator, capsys):
-    collaborator = fake_collaborator
+def test_collaborator_deletion_fails_without_authentication(monkey_token_check_false, fake_collaborator_management, capsys):
+    collaborator = fake_collaborator_management
     
     with pytest.raises(Exit):
         delete(collaborator.id)
