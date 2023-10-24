@@ -1,4 +1,5 @@
 import pytest
+from typer import Exit
 from datetime import datetime
 from epicevents.data_access_layer.contract import Contract
 from epicevents.cli.contract import create
@@ -53,12 +54,15 @@ def test_creation_with_optional_arguments_successful(monkey_token_check_manageme
 def test_creation_not_authorized(monkey_token_check_correct_sales, fake_client, fake_collaborator_sales, capsys):
     client = fake_client
     collaborator = fake_collaborator_sales
-    created_contract = create(client=client.id,
-           collaborator=collaborator.id,
-           total_sum=15000,
-           amount_due=15000,
-           creation_date="2023-10-15",
-           signed=True)
+    with pytest.raises(Exit):
+           create(client=client.id,
+                  collaborator=collaborator.id,
+                  total_sum=15000,
+                  amount_due=15000,
+                  creation_date="2023-10-15",
+                  signed=True)
+           
+    created_contract = Contract.get_or_none(Contract.id == 1)
     
     captured = capsys.readouterr()
 
@@ -68,12 +72,13 @@ def test_creation_not_authorized(monkey_token_check_correct_sales, fake_client, 
 def test_creation_fails_if_not_authenticated(monkey_token_check_false, fake_client, fake_collaborator_sales, capsys):
     client = fake_client
     collaborator = fake_collaborator_sales
-    create(client=client.id,
-           collaborator=collaborator.id,
-           total_sum=15000,
-           amount_due=15000,
-           creation_date="2023-10-15",
-           signed=True)
+    with pytest.raises(Exit):
+       create(client=client.id,
+              collaborator=collaborator.id,
+              total_sum=15000,
+              amount_due=15000,
+              creation_date="2023-10-15",
+              signed=True)
     
     created_contract = Contract.get_or_none(Contract.id == 1)
 

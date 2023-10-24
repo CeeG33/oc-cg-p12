@@ -8,7 +8,7 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 ph = PasswordHasher()
 
-def test_collaborator_delete_successful(monkey_token_check_management, fake_collaborator_management, capsys):
+def test_collaborator_delete_successful(monkey_capture_message_collaborator, monkey_token_check_management, fake_collaborator_management, capsys):
     collaborator = fake_collaborator_management
     delete(collaborator.id)
 

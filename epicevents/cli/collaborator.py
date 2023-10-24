@@ -6,6 +6,7 @@ from peewee import DoesNotExist
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv, find_dotenv, set_key
+from epicevents.sentry import sentry_sdk
 from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.data_access_layer.department import Department
 
@@ -28,7 +29,7 @@ def _generate_token(collaborator):
     return token
 
 def _memorize_token(token):
-    os.environ["TOKEN"] = token
+    set_key(".env", "TOKEN", token)
 
 def _read_token():
     return os.environ["TOKEN"]
@@ -101,10 +102,12 @@ def create(first_name: str, name: str, email: str, password: str, department: in
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
+        collaborator_id = token_check[1]["collaborator_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             Collaborator.create(first_name=first_name, name=name, email=email, password=password, department=department)
             print(f"Le collaborateur {first_name} {name} a été créé avec succès.")
+            sentry_sdk.capture_message(f"[CREATION COLLABORATEUR PAR COLLABORATEUR N°{collaborator_id}] >> Prénom : {first_name} - Nom : {name} - Email : {email} - Département : {department}")
         
         else:
             print("Action restreinte.")
@@ -127,6 +130,7 @@ def update(collaborator_id: Annotated[int, typer.Argument()],
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
+        user_id = token_check[1]["collaborator_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             try:
@@ -136,21 +140,25 @@ def update(collaborator_id: Annotated[int, typer.Argument()],
                     collaborator.first_name = new_value
                     collaborator.save()
                     print(f"Le champ 'Prénom' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    sentry_sdk.capture_message(f"[MAJ COLLABORATEUR N°{collaborator_id} PAR COLLABORATEUR N°{user_id}] >> Prénom : {new_value}")
                     
                 elif name:
                     collaborator.name = new_value
                     collaborator.save()
                     print(f"Le champ 'Nom' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    sentry_sdk.capture_message(f"[MAJ COLLABORATEUR N°{collaborator_id} PAR COLLABORATEUR N°{user_id}] >> Nom : {new_value}")
                     
                 elif email:
                     collaborator.email = new_value
                     collaborator.save()
                     print(f"Le champ 'Email' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    sentry_sdk.capture_message(f"[MAJ COLLABORATEUR N°{collaborator_id} PAR COLLABORATEUR N°{user_id}] >> Email : {new_value}")
                     
                 elif password:
                     collaborator.password = new_value
                     collaborator.save()
                     print(f"Le champ 'Mot de passe' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                    sentry_sdk.capture_message(f"[MAJ COLLABORATEUR N°{collaborator_id} PAR COLLABORATEUR N°{user_id}] >> Nouveau mot de passe")
                     
                 elif department:
                     department_check = Department.get_or_none(Department.id == new_value)
@@ -159,6 +167,7 @@ def update(collaborator_id: Annotated[int, typer.Argument()],
                         collaborator.department = new_value
                         collaborator.save()
                         print(f"Le champ 'Département' du collaborateur n°{collaborator_id} a été mis à jour avec succès.")
+                        sentry_sdk.capture_message(f"[MAJ COLLABORATEUR N°{collaborator_id} PAR COLLABORATEUR N°{user_id}] >> Département : {new_value}")
                     
                     else:
                         print("Veuillez entrer un numéro de département valide.")
@@ -185,12 +194,14 @@ def delete(collaborator_id: int):
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
+        user_id = token_check[1]["collaborator_id"]
         
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             try:
                 collaborator = Collaborator.get(Collaborator.id == collaborator_id)
                 collaborator.delete_instance()
                 print(f"Le collaborateur n°{collaborator_id} a été supprimé avec succès.")
+                sentry_sdk.capture_message(f"[SUPPRESSION COLLABORATEUR N°{collaborator_id} PAR COLLABORATEUR N°{user_id}]")
             
             except DoesNotExist:
                 print(f"Aucun collaborateur trouvé avec l'ID n°{collaborator_id}.")

@@ -94,7 +94,7 @@ def test_creation_date_update_successful(monkey_token_check_management, fake_con
     assert updated_contract.creation_date == datetime(2023, 10, 25)
     assert f"Le champ 'Date de création' du contrat n°{contract.id} a été mis à jour avec succès." in captured.out.strip()
     
-def test_signed_update_successful(monkey_token_check_management, fake_contract, capsys):
+def test_signed_update_successful(monkey_capture_message_contract, monkey_token_check_management, fake_contract, capsys):
     contract = fake_contract
     
     update(contract.id, True, signed=True)

@@ -1,10 +1,12 @@
 import pytest, os, jwt
+import sentry_sdk
 from datetime import datetime, timedelta
 from peewee import PostgresqlDatabase, SqliteDatabase
 from dotenv import load_dotenv, find_dotenv
 from epicevents.data_access_layer import client, collaborator, company, contract, department, event
 from epicevents.data_access_layer import database
 from epicevents.cli import collaborator as clicollaborator
+from epicevents.cli import contract as clicontract
 from epicevents.cli.collaborator import SECRET_KEY, MANAGEMENT_DEPARTMENT_ID, SALES_DEPARTMENT_ID, SUPPORT_DEPARTMENT_ID
 
 MODELS = [client.Client,
@@ -480,3 +482,17 @@ def monkey_read_token_wrong_department(monkeypatch, wrong_department_token):
         return wrong_department_token
     
     monkeypatch.setattr(clicollaborator, "_read_token", return_monkey_read_token)
+
+@pytest.fixture()
+def monkey_capture_message_collaborator(monkeypatch):
+    def return_monkey(*args, **kwargs):
+        pass
+    
+    monkeypatch.setattr(clicollaborator.sentry_sdk, "capture_message", return_monkey)
+    
+@pytest.fixture()
+def monkey_capture_message_contract(monkeypatch):
+    def return_monkey(*args, **kwargs):
+        pass
+    
+    monkeypatch.setattr(clicontract.sentry_sdk, "capture_message", return_monkey)

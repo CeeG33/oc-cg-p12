@@ -1,24 +1,22 @@
 import pytest
+from typer import Exit
 from epicevents.cli.collaborator import _memorize_token
 from epicevents.cli.contract import list
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
-def test_list_successful(valid_token, fake_contract, capsys):
-    _memorize_token(valid_token)
+def test_list_successful(monkey_token_check_management, fake_contract, capsys):
     list()
 
     captured = capsys.readouterr()
     
     assert "[ID]" in captured.out.strip() 
 
-def test_list_token_fails(fake_contract, wrong_token, capsys):
-    with pytest.raises(InvalidTokenError):
-        _memorize_token(wrong_token)
+def test_list_token_fails(monkey_token_check_false, fake_contract, capsys):
+    with pytest.raises(Exit):
         list()
     
-def test_list_token_expired(expired_token, fake_contract, capsys):
-    with pytest.raises(ExpiredSignatureError):
-        _memorize_token(expired_token)
-        list()
+    captured = capsys.readouterr()
+    
+    assert "Veuillez vous authentifier et réessayer." in captured.out.strip() 
     

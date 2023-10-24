@@ -3,7 +3,6 @@ from peewee import DoesNotExist
 from datetime import datetime
 from typing_extensions import Annotated
 from dotenv import load_dotenv
-from epicevents.sentry import sentry_sdk
 from epicevents.data_access_layer.client import Client
 from epicevents.data_access_layer.company import Company
 from epicevents.cli import collaborator as clicollaborator
@@ -23,15 +22,14 @@ def list():
         for client in queryset:
             if len(Client) == 0:
                 print("La base de donnée ne contient aucun client.")
-                raise typer.Exit
+                raise typer.Exit()
             
             else:
                 print(f"[ID] : {client.id} -- [Prénom] : {client.first_name} -- [Nom] : {client.name} -- [Email] : {client.email} -- [Téléphone] : {client.phone} -- [Entreprise] : {client.company.name} -- [Date de création] : {client.creation_date} -- [Dernier contact] : {client.last_update} -- Commercial associé : {client.collaborator.first_name} {client.collaborator.name}")
-                raise typer.Exit
     
     else:    
         print("Veuillez vous authentifier et réessayer.")
-        raise typer.Exit
+        raise typer.Exit()
 
 
 @app.command()
@@ -42,7 +40,7 @@ def create(first_name: Annotated[str, typer.Argument()],
            company: Annotated[int, typer.Argument()],
            collaborator: Annotated[int, typer.Argument()] = 0,
            creation_date: Annotated[str, typer.Argument()] = datetime.now().date(),
-           last_update: Annotated[int, typer.Argument()] = datetime.now().date()
+           last_update: Annotated[str, typer.Argument()] = datetime.now().date()
         ):
     token_check = clicollaborator._verify_token()
     if token_check:
@@ -58,7 +56,6 @@ def create(first_name: Annotated[str, typer.Argument()],
             
             Client.create(first_name=first_name, name=name, email=email, phone=phone, company=company_check.id, collaborator=collaborator_id, creation_date=creation_date, last_update=last_update)
             print("Le client a été créé avec succès.")
-            sentry_sdk.capture_message(f"[CREATION CLIENT PAR COLLABORATEUR N°{collaborator_id}] >> Prénom : {first_name} - Nom : {name} - Email : {email} - ID Commercial : {collaborator} - Date de création : {creation_date}")
         
         else:
             print("Action restreinte.")
@@ -99,7 +96,6 @@ def update(client_id: Annotated[int, typer.Argument()],
                     client.company = new_value
                     client.save()
                     print(f"Le champ 'Entreprise' du client n°{client_id} a été mis à jour avec succès.")
-                    sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id} PAR COLLABORATEUR N°{collaborator_id}] >> Entreprise : {new_value}")
                 
                 else:
                     print("Veuillez entrer un numéro d'entreprise valide.")
@@ -109,37 +105,31 @@ def update(client_id: Annotated[int, typer.Argument()],
                 client.first_name = new_value
                 client.save()
                 print(f"Le champ 'Prénom' du client n°{client_id} a été mis à jour avec succès.")
-                sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id} PAR COLLABORATEUR N°{collaborator_id}] >> Prénom : {new_value}")
                 
             elif name:
                 client.name = new_value
                 client.save()
                 print(f"Le champ 'Nom' du client n°{client_id} a été mis à jour avec succès.")
-                sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id} PAR COLLABORATEUR N°{collaborator_id}] >> Nom : {new_value}")
                 
             elif email:
                 client.email = new_value
                 client.save()
                 print(f"Le champ 'Email' du client n°{client_id} a été mis à jour avec succès.")
-                sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id} PAR COLLABORATEUR N°{collaborator_id}] >> Email : {new_value}")
                 
             elif phone:
                 client.phone = new_value
                 client.save()
                 print(f"Le champ 'Téléphone' du client n°{client_id} a été mis à jour avec succès.")
-                sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id} PAR COLLABORATEUR N°{collaborator_id}] >> Téléphone : {new_value}")
                 
             elif creation_date:
                 client.creation_date = new_value
                 client.save()
                 print(f"Le champ 'Date de création' du client n°{client_id} a été mis à jour avec succès.")
-                sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id} PAR COLLABORATEUR N°{collaborator_id}] >> Date de création : {new_value}")
             
             elif last_update:
                 client.last_update = new_value
                 client.save()
                 print(f"Le champ 'Dernier contact' du client n°{client_id} a été mis à jour avec succès.")
-                sentry_sdk.capture_message(f"[MAJ CLIENT N°{client_id}PAR COLLABORATEUR N°{collaborator_id}] >> Dernier contact : {new_value}")
                 
             else:
                 print("Vous n'avez pas sélectionné d'attribut à modifier.")

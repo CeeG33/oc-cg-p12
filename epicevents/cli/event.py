@@ -22,12 +22,14 @@ def list():
         for event in queryset:
             if len(Event) == 0:
                 print("La base de donnée ne contient aucun évènement.")
+                raise typer.Exit()
             
             else:
                 print(f"[ID] : {event.id} -- [ID Contrat] : {event.contract.id} -- [Client] : {event.contract.client.first_name} {event.contract.client.name} -- [Date de début] : {event.start_date} -- [Date de fin] : {event.end_date} -- [Localisation] : {event.location} -- [Nombre de participants] : {event.attendees} --  [Notes] : {event.notes} -- [Assistant en charge] : {event.support.first_name} {event.support.name}")
     
     else:
-        print("Veuillez vous authentifier.")
+        print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 @app.command()

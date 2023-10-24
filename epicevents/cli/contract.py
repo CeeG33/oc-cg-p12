@@ -29,6 +29,7 @@ def list():
     
     else:
         print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 @app.command()
@@ -49,9 +50,11 @@ def create(client: Annotated[int, typer.Argument()],
         
         else:
             print("Action restreinte.")
+            raise typer.Exit()
         
     else:
         print("Veuillez vous authentifier et réessayer.")
+        raise typer.Exit()
 
 
 @app.command()

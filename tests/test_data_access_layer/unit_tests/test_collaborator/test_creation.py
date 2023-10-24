@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from peewee import IntegrityError
 from argon2 import PasswordHasher
 from epicevents.data_access_layer.collaborator import Collaborator
@@ -114,7 +114,7 @@ def test_collaborator_get_data(fake_department_management):
             "collaborator_id" : f"{collaborator.id}",
             "email": f"{collaborator.email}",
             "department_id": f"{collaborator.department.id}",
-            "exp": datetime.utcnow() + timedelta(hours=1) 
+            "exp": datetime.now(tz=timezone.utc) + timedelta(hours=1) 
         }
     
     assert collaborator.get_data() == expected_result

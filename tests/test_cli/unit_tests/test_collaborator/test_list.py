@@ -5,7 +5,7 @@ from epicevents.cli.collaborator import list, _memorize_token, _verify_token
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
-def test_list_successful(monkey_token_check_management, fake_department_management, capsys):
+def test_list_successful(monkey_token_check_management, fake_department_management, fake_collaborator_management, capsys):
     list()
 
     captured = capsys.readouterr()

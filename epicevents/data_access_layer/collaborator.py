@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from peewee import *
 from argon2 import PasswordHasher
 from .database import BaseModel
@@ -41,7 +41,7 @@ class Collaborator(BaseModel):
             "collaborator_id" : f"{self.id}",
             "email": f"{self.email}",
             "department_id": f"{self.department.id}",
-            "exp": datetime.utcnow() + timedelta(hours=1)
+            "exp": datetime.now(tz=timezone.utc) + timedelta(hours=1)
         }
     
         return collaborator_data
