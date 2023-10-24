@@ -2,6 +2,7 @@ import typer
 from typing_extensions import Annotated
 from peewee import DoesNotExist
 from datetime import datetime
+from epicevents.sentry import sentry_sdk
 from epicevents.data_access_layer.contract import Contract
 from epicevents.data_access_layer.client import Client
 from epicevents.data_access_layer.collaborator import Collaborator
@@ -119,6 +120,7 @@ def update(contract_id: Annotated[int, typer.Argument()],
                 contract.signed = new_value
                 contract.save()
                 print(f"Le champ 'Signé' du contrat n°{contract_id} a été mis à jour avec succès.")
+                sentry_sdk.capture_message(f"[SIGNATURE CONTRAT N°{contract_id} PAR COLLABORATEUR N°{collaborator_id}] >> Date : {datetime.now()}")
                 
             else:
                 print("Vous n'avez pas sélectionné d'attribut à modifier.")
