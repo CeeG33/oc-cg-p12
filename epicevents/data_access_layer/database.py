@@ -10,6 +10,8 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 psql_db = PostgresqlDatabase(DB_NAME, user=DB_USER, password=DB_PASSWORD)
 psql_migrator = PostgresqlMigrator(psql_db)
+
+
 class BaseModel(Model):
     class Meta:
         database = psql_db

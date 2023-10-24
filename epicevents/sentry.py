@@ -6,6 +6,4 @@ load_dotenv()
 
 DSN = os.getenv("DSN")
 
-sentry_sdk.init(
-    dsn=DSN
-)
+sentry_sdk.init(dsn=DSN)

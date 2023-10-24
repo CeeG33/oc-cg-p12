@@ -21,7 +21,7 @@ Collaborator.create(
     name="Test",
     email="admin@epicevents.com",
     password="admin",
-    department=1
+    department=1,
 )
 
 # Collaborator.delete_by_id(6)
