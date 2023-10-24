@@ -5,7 +5,7 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from peewee import DoesNotExist
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from dotenv import load_dotenv, find_dotenv, set_key
+from dotenv import load_dotenv, find_dotenv, set_key, get_key
 from epicevents.sentry import sentry_sdk
 from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.data_access_layer.department import Department
@@ -35,7 +35,7 @@ def _memorize_token(token):
 
 
 def _read_token():
-    return os.environ["TOKEN"]
+    return get_key(".env", "TOKEN")
 
 
 def _verify_token():
@@ -57,7 +57,9 @@ def _verify_token():
 
 
 @app.command()
-def login(email: str, password: str):
+def login(email: Annotated[str, typer.Option(prompt=True, help="Email du collaborateur - Exemple : exemple@email.com")],
+          password: Annotated[str, typer.Option(prompt=True, help= "Mot de passe", confirmation_prompt=True, hide_input=True)]):
+    """Logs into the software."""
     collaborator = Collaborator.get_or_none(Collaborator.email == email)
 
     if collaborator:
@@ -79,6 +81,7 @@ def login(email: str, password: str):
 
 @app.command()
 def list():
+    """Lists all collaborators."""
     token_check = _verify_token()
 
     if token_check:
@@ -106,7 +109,12 @@ def list():
 
 
 @app.command()
-def create(first_name: str, name: str, email: str, password: str, department: int):
+def create(first_name: Annotated[str, typer.Option(prompt="Prénom", help="Prénom du collaborateur - Exemple : Alain")],
+           name: Annotated[str, typer.Option(prompt="Nom", help="Nom du collaborateur - Exemple : Terieur")],
+           password: Annotated[str, typer.Option(prompt="Mot de passe", help= "Mot de passe du collaborateur", confirmation_prompt=True, hide_input=True)],
+           email: Annotated[str, typer.Option(prompt="Email", help="Adresse mail du collaborateur - Exemple : alain.terieur@mail.com")],
+           department: Annotated[int, typer.Option(prompt="N° de département", help="Numéro de département du collaborateur - Rappel : 1 > Gestion - 2 > Commercial - 3 > Support")]):
+    """Creates a new collaborator."""
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
@@ -136,14 +144,15 @@ def create(first_name: str, name: str, email: str, password: str, department: in
 
 @app.command()
 def update(
-    collaborator_id: Annotated[int, typer.Argument()],
-    new_value: Annotated[str, typer.Argument()],
-    first_name: Annotated[bool, typer.Option()] = False,
-    name: Annotated[bool, typer.Option()] = False,
-    email: Annotated[bool, typer.Option()] = False,
-    password: Annotated[bool, typer.Option()] = False,
-    department: Annotated[bool, typer.Option()] = False,
+    collaborator_id: Annotated[int, typer.Argument(help="N° du collaborateur à modifier - Exemple : 1")],
+    new_value: Annotated[str, typer.Argument(help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !")],
+    first_name: Annotated[bool, typer.Option("-fn", help="Modifier le prénom - Exemple : Alain")] = False,
+    name: Annotated[bool, typer.Option("-n", help="Modifier le nom - Exemple : Terieur")] = False,
+    email: Annotated[bool, typer.Option("-e", help="Modifier l'email - Exemple : alain.terieur@mail.com")] = False,
+    password: Annotated[bool, typer.Option("-p" , help="Modifier le mot de passe")] = False,
+    department: Annotated[bool, typer.Option("-d", help="Modifier le département - Exemple : 1")] = False
 ):
+    """Updates a given collaborator."""
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
@@ -229,7 +238,8 @@ def update(
 
 
 @app.command()
-def delete(collaborator_id: int):
+def delete(collaborator_id: Annotated[int, typer.Option(prompt="N° du collaborateur", confirmation_prompt=True, help="Numéro du collaborateur")]):
+    """Deletes a collaborator."""
     token_check = _verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]

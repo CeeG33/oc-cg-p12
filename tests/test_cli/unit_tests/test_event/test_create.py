@@ -94,6 +94,32 @@ def test_contract_not_found(monkey_token_check_correct_sales, fake_contract, cap
 
     assert "Veuillez entrer un numéro de contrat valide." in captured.out.strip()
     assert created_event == None
+    
+
+def test_support_not_found(monkey_token_check_correct_sales, fake_contract, capsys):
+    contract = fake_contract.id
+    start_date = "2024-05-20 14:00"
+    end_date = "2024-05-20 22:00"
+    location = "98, rue des Chats - 92000 NANTERRE"
+    attendees = 6
+    support = -100
+
+    with pytest.raises(Exit):
+        create(
+            contract=contract,
+            start_date=start_date,
+            end_date=end_date,
+            location=location,
+            attendees=attendees,
+            support=support
+        )
+
+    created_event = Event.get_or_none(Event.id == 1)
+
+    captured = capsys.readouterr()
+
+    assert "Veuillez entrer un numéro de support valide." in captured.out.strip()
+    assert created_event == None
 
 
 def test_creation_fails_with_wrong_salesman(

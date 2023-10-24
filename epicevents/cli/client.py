@@ -19,6 +19,7 @@ app = typer.Typer()
 
 @app.command()
 def list():
+    """Lists all clients."""
     token_check = clicollaborator._verify_token()
     if token_check:
         queryset = Client.select()
@@ -40,15 +41,16 @@ def list():
 
 @app.command()
 def create(
-    first_name: Annotated[str, typer.Argument()],
-    name: Annotated[str, typer.Argument()],
-    email: Annotated[str, typer.Argument()],
-    phone: Annotated[str, typer.Argument()],
-    company: Annotated[int, typer.Argument()],
-    collaborator: Annotated[int, typer.Argument()] = 0,
-    creation_date: Annotated[str, typer.Argument()] = datetime.now().date(),
-    last_update: Annotated[str, typer.Argument()] = datetime.now().date(),
+    first_name: Annotated[str, typer.Option(prompt="Prénom", help="Prénom du client - Exemple : Alain")],
+    name: Annotated[str, typer.Option(prompt="Nom", help="Nom du client - Exemple : Terieur")],
+    email: Annotated[str, typer.Option(prompt="Email", help="Adresse mail du client - Exemple : alain.terieur@mail.com")],
+    phone: Annotated[str, typer.Option(prompt="Téléphone", help="Numéro de téléphone du client - Exemple : 0654987845")],
+    company: Annotated[int, typer.Option(prompt="N° d'entreprise", help="Numéro d'entreprise du client - Exemple : 2")],
+    creation_date: Annotated[str, typer.Option(help="Date de création - Exemple : 2023-12-24")] = datetime.now().date(),
+    last_update: Annotated[str, typer.Option(help="Dernier contact - Exemple : 2023-12-24")] = datetime.now().date(),
+    collaborator: Annotated[int, typer.Option(help="Numéro du commercial en charge - Exemple : 1")] = 0,
 ):
+    """Creates a new client."""
     token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
@@ -84,16 +86,17 @@ def create(
 
 @app.command()
 def update(
-    client_id: Annotated[int, typer.Argument()],
-    new_value: Annotated[str, typer.Argument()],
-    first_name: Annotated[bool, typer.Option()] = False,
-    name: Annotated[bool, typer.Option()] = False,
-    email: Annotated[bool, typer.Option()] = False,
-    phone: Annotated[bool, typer.Option()] = False,
-    company: Annotated[bool, typer.Option()] = False,
-    creation_date: Annotated[bool, typer.Option()] = False,
-    last_update: Annotated[bool, typer.Option()] = False,
+    client_id: Annotated[int, typer.Argument(help="N° du client à modifier - Exemple : 1")],
+    new_value: Annotated[str, typer.Argument(help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !")],
+    first_name: Annotated[bool, typer.Option("-fn", help="Modifier le prénom - Exemple : Alain")] = False,
+    name: Annotated[bool, typer.Option("-n", help="Modifier le nom - Exemple : Terieur")] = False,
+    email: Annotated[bool, typer.Option("-e", help="Modifier l'email - Exemple : alain.terieur@mail.com")] = False,
+    phone: Annotated[bool, typer.Option("-p", help="Modifier le numéro de téléphone - Exemple : 0654987845")] = False,
+    company: Annotated[bool, typer.Option("-c", help="Modifier le numéro d'entreprise - Exemple : 1")] = False,
+    creation_date: Annotated[bool, typer.Option("-d", help="Modifier la date de création - Exemple : 2023-12-24")] = False,
+    last_update: Annotated[bool, typer.Option("-u", help="Modifier la date du dernier contact - Exemple : 2023-12-24")] = False,
 ):
+    """Updates a given client."""
     token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]

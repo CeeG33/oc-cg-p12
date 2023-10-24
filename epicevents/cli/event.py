@@ -18,6 +18,7 @@ app = typer.Typer()
 
 @app.command()
 def list():
+    """Lists all events."""
     token_check = clicollaborator._verify_token()
     if token_check:
         queryset = Event.select()
@@ -38,7 +39,8 @@ def list():
 
 
 @app.command()
-def filter(s: Annotated[bool, typer.Option()] = False):
+def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements qui n'ont pas de support affecté")] = False):
+    """Filters the events depending on the option selected."""
     token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
@@ -81,16 +83,17 @@ def filter(s: Annotated[bool, typer.Option()] = False):
 
 @app.command()
 def update(
-    event_id: Annotated[int, typer.Argument()],
-    new_value: Annotated[str, typer.Argument()],
-    contract: Annotated[bool, typer.Option()] = False,
-    start_date: Annotated[bool, typer.Option()] = False,
-    end_date: Annotated[bool, typer.Option()] = False,
-    location: Annotated[bool, typer.Option()] = False,
-    attendees: Annotated[bool, typer.Option()] = False,
-    notes: Annotated[bool, typer.Option()] = False,
-    support: Annotated[bool, typer.Option()] = False,
+    event_id: Annotated[int, typer.Argument(help="N° de l'évènement à modifier - Exemple : 1")],
+    new_value: Annotated[str, typer.Argument(help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !")],
+    contract: Annotated[bool, typer.Option("-c", help="Modifier le numéro du contrat - Exemple : 1")] = False,
+    start_date: Annotated[bool, typer.Option("-d", help="Modifier la date de début - Exemple : 2023-12-24")] = False,
+    end_date: Annotated[bool, typer.Option("-ed", help="Modifier la date de fin - Exemple : 2023-12-24")] = False,
+    location: Annotated[bool, typer.Option("-l", help="Modifier la localisation - Exemple : 42, rue du Vieux Pont - 92000 NANTERRE")] = False,
+    attendees: Annotated[bool, typer.Option("-a", help="Modifier le nombre de participants - Exemple : 4")] = False,
+    notes: Annotated[bool, typer.Option("-n", help="Modifier les notes - Exemple : Prévoir des bouteilles d'eau")] = False,
+    support: Annotated[bool, typer.Option("-s", help="Modifier le numéro du support associé - Exemple : 1")] = False,
 ):
+    """Updates a given event."""
     token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
@@ -191,14 +194,15 @@ def update(
 
 @app.command()
 def create(
-    contract: Annotated[int, typer.Argument()],
-    start_date: Annotated[str, typer.Argument()],
-    end_date: Annotated[str, typer.Argument()],
-    location: Annotated[str, typer.Argument()],
-    attendees: Annotated[int, typer.Argument()],
-    notes: Annotated[str, typer.Argument()] = "",
-    support: Annotated[int, typer.Argument()] = None,
+    contract: Annotated[int, typer.Option(prompt="N° du contrat", help="Numéro du contrat associé - Exemple : 1")],
+    start_date: Annotated[str, typer.Option(prompt="Date de début", help="Date de début - Exemple : 2023-12-24")],
+    end_date: Annotated[str, typer.Option(prompt="Date de fin", help="Date de fin - Exemple : 2023-12-24")],
+    location: Annotated[str, typer.Option(prompt="Localisation", help="Localisation - Exemple : 42, rue du Vieux Pont - 92000 NANTERRE")],
+    attendees: Annotated[int, typer.Option(prompt="Nombre de participants", help="Nombre de participants - Exemple : 4")],
+    notes: Annotated[str, typer.Option(help="Notes - Exemple : Prévoir des bouteilles d'eau")] = "",
+    support: Annotated[int, typer.Option(help="Numéro du support associé - Exemple : 2")] = None,
 ):
+    """Creates a new event."""
     token_check = clicollaborator._verify_token()
     if token_check:
         collaborator_department = token_check[1]["department_id"]
@@ -219,10 +223,17 @@ def create(
                         "Vous ne pouvez pas créer d'évènement pour un contrat qui n'est pas signé."
                     )
                     raise typer.Exit()
-
+                
             else:
                 print("Veuillez entrer un numéro de contrat valide.")
-                raise typer.Exit(code=1)
+                raise typer.Exit()
+            
+            if support is not None:
+                support_check = Collaborator.get_or_none(Collaborator.id == support)
+                
+                if not support_check:
+                    print("Veuillez entrer un numéro de support valide.")
+                    raise typer.Exit()
 
             Event.create(
                 contract=target_contract.id,

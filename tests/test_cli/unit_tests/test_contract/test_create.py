@@ -56,6 +56,37 @@ def test_creation_with_optional_arguments_successful(
 
     created_contract.delete_instance()
 
+def test_creation_fails_with_wrong_client_id(
+    monkey_token_check_management, fake_collaborator_sales, capsys
+):
+    client = -100
+    collaborator = fake_collaborator_sales
+    with pytest.raises(Exit):
+        create(client=client, collaborator=collaborator.id, total_sum=30000)
+
+    created_contract = Contract.get_or_none(Contract.id == 1)
+
+    captured = capsys.readouterr()
+
+    assert created_contract == None
+    assert f"Aucun client trouvé avec l'ID n°{client}." in captured.out.strip()
+
+
+def test_creation_fails_with_wrong_collaborator_id(
+    monkey_token_check_management, fake_client, capsys
+):
+    client = fake_client
+    collaborator = -100
+    with pytest.raises(Exit):
+        create(client=client.id, collaborator=collaborator, total_sum=30000)
+
+    created_contract = Contract.get_or_none(Contract.id == 1)
+
+    captured = capsys.readouterr()
+
+    assert created_contract == None
+    assert f"Aucun commercial trouvé avec l'ID n°{collaborator}." in captured.out.strip()
+
 
 def test_creation_not_authorized(
     monkey_token_check_correct_sales, fake_client, fake_collaborator_sales, capsys
