@@ -13,7 +13,7 @@ def test_creation_successful(
     collaborator = fake_collaborator_sales
     create(client=client.id, collaborator=collaborator.id, total_sum=30000)
 
-    created_contract = Contract.get(Contract.id == 1)
+    created_contract = Contract.get(Contract.total_sum == 30000)
 
     captured = capsys.readouterr()
 
@@ -42,7 +42,7 @@ def test_creation_with_optional_arguments_successful(
         signed=True,
     )
 
-    created_contract = Contract.get(Contract.id == 1)
+    created_contract = Contract.get(Contract.total_sum == 15000)
 
     captured = capsys.readouterr()
 
@@ -64,7 +64,7 @@ def test_creation_fails_with_wrong_client_id(
     with pytest.raises(Exit):
         create(client=client, collaborator=collaborator.id, total_sum=30000)
 
-    created_contract = Contract.get_or_none(Contract.id == 1)
+    created_contract = Contract.get_or_none(Contract.client == client)
 
     captured = capsys.readouterr()
 
@@ -80,7 +80,7 @@ def test_creation_fails_with_wrong_collaborator_id(
     with pytest.raises(Exit):
         create(client=client.id, collaborator=collaborator, total_sum=30000)
 
-    created_contract = Contract.get_or_none(Contract.id == 1)
+    created_contract = Contract.get_or_none(Contract.collaborator == collaborator)
 
     captured = capsys.readouterr()
 
@@ -97,13 +97,13 @@ def test_creation_not_authorized(
         create(
             client=client.id,
             collaborator=collaborator.id,
-            total_sum=15000,
+            total_sum=23000,
             amount_due=15000,
             creation_date="2023-10-15",
             signed=True,
         )
 
-    created_contract = Contract.get_or_none(Contract.id == 1)
+    created_contract = Contract.get_or_none(Contract.total_sum == 23000)
 
     captured = capsys.readouterr()
 
@@ -120,13 +120,13 @@ def test_creation_fails_if_not_authenticated(
         create(
             client=client.id,
             collaborator=collaborator.id,
-            total_sum=15000,
+            total_sum=14000,
             amount_due=15000,
             creation_date="2023-10-15",
             signed=True,
         )
 
-    created_contract = Contract.get_or_none(Contract.id == 1)
+    created_contract = Contract.get_or_none(Contract.total_sum == 14000)
 
     captured = capsys.readouterr()
 

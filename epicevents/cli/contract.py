@@ -71,11 +71,11 @@ def list():
 @app.command()
 def create(
     client: Annotated[int, typer.Option(prompt="N° du client", help="Numéro du client - Exemple : 2")],
-    collaborator: Annotated[int, typer.Option(prompt="N° du commercial", help="Numéro du commercial en charge - Exemple : 2")],
     total_sum: Annotated[float, typer.Option(prompt="Montant total", help="Montant total - Exemple : 1000")],
     amount_due: Annotated[float, typer.Option(prompt="Montant restant dû", help="Montant restant dû - Exemple : 1000")] = None,
     creation_date: Annotated[str, typer.Option(help="Date de création - Exemple : 2023-12-24")] = datetime.now().date(),
     signed: Annotated[bool, typer.Option(help="Statut de la signature - Rappel : True pour Signé / False pour Non signé")] = False,
+    collaborator: Annotated[int, typer.Option(help="Numéro du commercial en charge - Exemple : 2")] = 0,
 ):
     """Creates a new contract."""
     token_check = clicollaborator._verify_token()
@@ -90,13 +90,16 @@ def create(
                 print(f"Aucun client trouvé avec l'ID n°{client}.")
                 raise typer.Exit()
             
-            if collaborator_check is None:
-                print(f"Aucun commercial trouvé avec l'ID n°{collaborator}.")
-                raise typer.Exit()
+            if collaborator != 0:
+                collaborator_check = Collaborator.get_or_none(Collaborator.id == collaborator)
+                
+                if collaborator_check is None:
+                    print(f"Aucun commercial trouvé avec l'ID n°{collaborator}.")
+                    raise typer.Exit()
             
             Contract.create(
                 client=client,
-                collaborator=collaborator,
+                collaborator=client_check.collaborator.id,
                 total_sum=total_sum,
                 amount_due=amount_due,
                 creation_date=creation_date,

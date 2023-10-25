@@ -21,7 +21,7 @@ def test_list_unsuccessful_with_null_database(monkey_token_check_support_gargame
     assert "La base de donnée ne contient aucun évènement." in captured.out.strip()
 
 
-def test_list_token_fails(monkey_token_check_false, fake_event, capsys):
+def test_list_token_fails(monkey_token_check_false, capsys):
     with pytest.raises(Exit):
         list()
 

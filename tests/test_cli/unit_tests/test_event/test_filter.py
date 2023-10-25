@@ -15,8 +15,6 @@ def test_filter_support_with_management_collaborator_successful(
     filter(s=True)
 
     captured = capsys.readouterr()
-    
-    print(captured)
 
     assert "À" in captured.out.strip()
 

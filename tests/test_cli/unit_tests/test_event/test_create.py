@@ -10,7 +10,7 @@ def test_creation_successful(monkey_token_check_correct_sales, fake_contract, ca
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
-    location = "98, rue des Chats - 92000 NANTERRE"
+    location = "102, rue des Chiens - 92000 NANTERRE"
     attendees = 6
 
     create(
@@ -21,7 +21,7 @@ def test_creation_successful(monkey_token_check_correct_sales, fake_contract, ca
         attendees=attendees,
     )
 
-    created_event = Event.get(Event.id == 1)
+    created_event = Event.get(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -41,7 +41,7 @@ def test_creation_with_optional_arguments_successful(
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
-    location = "98, rue des Chats - 92000 NANTERRE"
+    location = "223, rue des Chèvres - 92000 NANTERRE"
     attendees = 6
     notes = "Ceci est un test"
     support = fake_collaborator_support.id
@@ -56,7 +56,7 @@ def test_creation_with_optional_arguments_successful(
         support=support,
     )
 
-    created_event = Event.get(Event.id == 1)
+    created_event = Event.get(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -88,7 +88,7 @@ def test_contract_not_found(monkey_token_check_correct_sales, fake_contract, cap
             attendees=attendees,
         )
 
-    created_event = Event.get_or_none(Event.id == 1)
+    created_event = Event.get_or_none(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -114,7 +114,7 @@ def test_support_not_found(monkey_token_check_correct_sales, fake_contract, caps
             support=support
         )
 
-    created_event = Event.get_or_none(Event.id == 1)
+    created_event = Event.get_or_none(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -139,7 +139,7 @@ def test_creation_fails_with_wrong_salesman(
             location=location,
             attendees=attendees,
         )
-    created_event = Event.get_or_none(Event.id == 1)
+    created_event = Event.get_or_none(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -167,7 +167,7 @@ def test_creation_fails_with_unsigned_contract(
             location=location,
             attendees=attendees,
         )
-    created_event = Event.get_or_none(Event.id == 1)
+    created_event = Event.get_or_none(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -194,7 +194,7 @@ def test_creation_not_authorized(monkey_token_check_management, fake_contract, c
             attendees=attendees,
         )
 
-    created_event = Event.get_or_none(Event.id == 1)
+    created_event = Event.get_or_none(Event.location == location)
 
     captured = capsys.readouterr()
 
@@ -220,7 +220,7 @@ def test_creation_fails_if_not_authenticated(
             attendees=attendees,
         )
 
-    created_event = Event.get_or_none(Event.id == 1)
+    created_event = Event.get_or_none(Event.location == location)
 
     captured = capsys.readouterr()
 
