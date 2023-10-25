@@ -1,11 +1,13 @@
 import os, jwt, typer
-from typing import Optional
+from rich import print
+from rich.console import Console
+from rich.table import Table
 from typing_extensions import Annotated
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from peewee import DoesNotExist
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from dotenv import load_dotenv, find_dotenv, set_key, get_key
+from dotenv import load_dotenv, set_key, get_key
 from epicevents.sentry import sentry_sdk
 from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.data_access_layer.department import Department
@@ -56,6 +58,32 @@ def _verify_token():
     return True, decoded_payload
 
 
+def _create_collaborators_table():
+    table = Table(title="Tableau des collaborateurs")
+    table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
+    table.add_column("[Prénom]", justify="center", no_wrap=True, style="orange_red1")
+    table.add_column("[Nom]", justify="center", no_wrap=True, style="orange_red1")
+    table.add_column("[Email]", justify="center", no_wrap=True, style="yellow")
+    table.add_column("[Departement]", justify="center", no_wrap=True, style="chartreuse4")
+    
+    return table
+
+
+def _add_rows_in_collaborators_table(user, table):
+    table.add_row(f"{user.id}", f"{user.first_name}", f"{user.name}", f"{user.email}", f"{user.department.name}"
+                )
+
+
+def _print_table(queryset):
+    table = _create_collaborators_table()
+
+    for user in queryset:
+        _add_rows_in_collaborators_table(user, table)
+    
+    console = Console()
+    console.print(table)
+
+
 @app.command()
 def login(email: Annotated[str, typer.Option(prompt=True, help="Email du collaborateur - Exemple : exemple@email.com")],
           password: Annotated[str, typer.Option(prompt=True, help= "Mot de passe", confirmation_prompt=True, hide_input=True)]):
@@ -67,14 +95,14 @@ def login(email: Annotated[str, typer.Option(prompt=True, help="Email du collabo
             try:
                 password_check = ph.verify(collaborator.password, password)
             except VerifyMismatchError:
-                typer.echo("Nom d'utilisateur ou mot de passe incorrect.")
+                print("Nom d'utilisateur ou mot de passe incorrect.")
                 raise typer.Exit(code=1)
 
     if not collaborator:
-        typer.echo("Nom d'utilisateur ou mot de passe incorrect.")
+        print("Nom d'utilisateur ou mot de passe incorrect.")
         raise typer.Exit(code=1)
 
-    typer.echo("Authentification réussie.")
+    print("Authentification réussie.")
     token = _generate_token(collaborator)
     _memorize_token(token)
 
@@ -89,16 +117,13 @@ def list():
 
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             queryset = Collaborator.select()
-
-            for user in queryset:
-                if len(Collaborator) == 0:
-                    print("La base de donnée ne contient aucun collaborateur.")
-                    raise typer.Exit()
-
-                print(
-                    f"[ID] : {user.id} -- [Prénom] : {user.first_name} -- [Nom] : {user.name} -- [Email] : {user.email} -- [Departement] : {user.department.name}"
-                )
-
+            
+            if len(queryset) == 0:
+                print("La base de donnée ne contient aucun collaborateur.")
+                raise typer.Exit()
+            
+            _print_table(queryset)
+            
         else:
             print("Action restreinte.")
             raise typer.Exit()

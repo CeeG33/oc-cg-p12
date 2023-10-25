@@ -1,4 +1,7 @@
 import typer
+from rich import print
+from rich.console import Console
+from rich.table import Table
 from peewee import DoesNotExist
 from typing_extensions import Annotated, Optional
 from epicevents.data_access_layer.event import Event
@@ -16,6 +19,43 @@ from .collaborator import _verify_token
 app = typer.Typer()
 
 
+def _create_events_table():
+    table = Table(title="Tableau des évènements")
+    table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
+    table.add_column("[ID Contrat]", justify="center", no_wrap=True, style="cyan")
+    table.add_column("[Client]", justify="center", no_wrap=True, style="orange_red1")
+    table.add_column("[Date de début]", justify="center", no_wrap=True, style="plum4")
+    table.add_column("[Date de fin]", justify="center", no_wrap=True, style="plum4")
+    table.add_column("[Localisation]", justify="center", no_wrap=True, style="purple4")
+    table.add_column("[Nombre de participants]", justify="center", no_wrap=True, style="blue")
+    table.add_column("[Notes]", justify="left", style="yellow")
+    table.add_column("[Assistant en charge]", justify="center", no_wrap=True, style="red")
+    
+    return table
+
+
+def _add_rows_in_events_table(event, table):
+    if event.support is None:
+        table.add_row(
+                    f"{event.id}", f"{event.contract.id}", f"{event.contract.client.first_name} {event.contract.client.name}", f"{event.start_date}", f"{event.end_date}", f"{event.location}", f"{event.attendees}", f"{event.notes}", "À définir"
+                )
+        
+    else:
+        table.add_row(
+                        f"{event.id}", f"{event.contract.id}", f"{event.contract.client.first_name} {event.contract.client.name}", f"{event.start_date}", f"{event.end_date}", f"{event.location}", f"{event.attendees}", f"{event.notes}", f"{event.support.first_name} {event.support.name}"
+                    )
+
+
+def _print_table(queryset):
+    table = _create_events_table()
+
+    for event in queryset:
+        _add_rows_in_events_table(event, table)
+    
+    console = Console()
+    console.print(table)
+
+
 @app.command()
 def list():
     """Lists all events."""
@@ -23,15 +63,11 @@ def list():
     if token_check:
         queryset = Event.select()
 
-        for event in queryset:
-            if len(Event) == 0:
-                print("La base de donnée ne contient aucun évènement.")
-                raise typer.Exit()
-
-            else:
-                print(
-                    f"[ID] : {event.id} -- [ID Contrat] : {event.contract.id} -- [Client] : {event.contract.client.first_name} {event.contract.client.name} -- [Date de début] : {event.start_date} -- [Date de fin] : {event.end_date} -- [Localisation] : {event.location} -- [Nombre de participants] : {event.attendees} --  [Notes] : {event.notes} -- [Assistant en charge] : {event.support.first_name} {event.support.name}"
-                )
+        if len(queryset) == 0:
+            print("La base de donnée ne contient aucun évènement.")
+            raise typer.Exit()
+        
+        _print_table(queryset)
 
     else:
         print("Veuillez vous authentifier et réessayer.")
@@ -39,7 +75,7 @@ def list():
 
 
 @app.command()
-def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements qui n'ont pas de support affecté")] = False):
+def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements en fonction des droits du collaborateur.")] = False):
     """Filters the events depending on the option selected."""
     token_check = clicollaborator._verify_token()
     if token_check:
@@ -54,19 +90,21 @@ def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements q
                 if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
                     queryset = Event.select().where(Event.support == None)
 
-                    for event in queryset:
-                        print(
-                            f"[ID] : {event.id} -- [ID Contrat] : {event.contract.id} -- [Client] : {event.contract.client.first_name} {event.contract.client.name} -- [Date de début] : {event.start_date} -- [Date de fin] : {event.end_date} -- [Localisation] : {event.location} -- [Nombre de participants] : {event.attendees} --  [Notes] : {event.notes} -- [Assistant en charge] : À définir"
-                        )
+                    if len(queryset) == 0:
+                        print(":white_check_mark: :white_check_mark: :white_check_mark: Tous les évènements ont un assistant en charge ! :white_check_mark: :white_check_mark: :white_check_mark:")
+                        raise typer.Exit()
+                        
+                    _print_table(queryset)
 
                 elif int(collaborator_department) == SUPPORT_DEPARTMENT_ID:
                     support = Collaborator.get(Collaborator.id == collaborator_id)
                     queryset = Event.select().where(Event.support == support)
 
-                    for event in queryset:
-                        print(
-                            f"[ID] : {event.id} -- [ID Contrat] : {event.contract.id} -- [Client] : {event.contract.client.first_name} {event.contract.client.name} -- [Date de début] : {event.start_date} -- [Date de fin] : {event.end_date} -- [Localisation] : {event.location} -- [Nombre de participants] : {event.attendees} --  [Notes] : {event.notes} -- [Assistant en charge] : {event.support.first_name} {event.support.name}"
-                        )
+                    if len(queryset) == 0:
+                        print("Vous n'avez pas d'évènement affecté.")
+                        raise typer.Exit()
+                        
+                    _print_table(queryset)
 
             elif not s:
                 print("Vous n'avez pas sélectionné de filtre à appliquer.")

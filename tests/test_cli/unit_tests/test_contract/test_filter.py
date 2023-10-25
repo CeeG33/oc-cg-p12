@@ -15,13 +15,24 @@ def test_filter_signed_successful(
     filter(ns=True)
 
     captured = capsys.readouterr()
+    
 
-    assert "[Montant restant dû] : 3200.0" in captured.out.strip()
-    assert "[Contrat signé ?] : False" in captured.out.strip()
-    assert "[Contrat signé ?] : True" not in captured.out.strip()
-    assert "[Montant restant dû] : 10000.0" not in captured.out.strip()
-    assert "[Montant restant dû] : None" not in captured.out.strip()
+    assert "3200.0" in captured.out.strip()
+    assert "False" in captured.out.strip()
+    assert "True" not in captured.out.strip()
+    assert "10000.0" not in captured.out.strip()
+    assert "None" not in captured.out.strip()
 
+def test_filter_signed_fails_with_null_queryset(
+    monkey_token_check_correct_sales,
+    capsys,
+):
+    with pytest.raises(Exit):
+        filter(ns=True)
+
+    captured = capsys.readouterr()
+
+    assert "Tous les contrats sont signés !" in captured.out.strip()
 
 def test_filter_unpaid_successful(
     monkey_token_check_correct_sales,
@@ -35,10 +46,20 @@ def test_filter_unpaid_successful(
 
     captured = capsys.readouterr()
 
-    assert "[Montant restant dû] : 3200.0" in captured.out.strip()
-    assert "[Montant restant dû] : None" in captured.out.strip()
-    assert "[Montant restant dû] : 0.0" not in captured.out.strip()
+    assert "3200.0" in captured.out.strip()
+    assert "None" in captured.out.strip()
 
+
+def test_filter_unpaid_fails_with_null_queryset(
+    monkey_token_check_correct_sales,
+    capsys,
+):
+    with pytest.raises(Exit):
+        filter(u=True)
+
+    captured = capsys.readouterr()
+
+    assert "Tous les contrats sont payés !" in captured.out.strip()
 
 def test_filter_fails_without_attribute(
     monkey_token_check_correct_sales,

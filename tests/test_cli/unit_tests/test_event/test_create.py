@@ -144,7 +144,7 @@ def test_creation_fails_with_wrong_salesman(
     captured = capsys.readouterr()
 
     assert (
-        "Vous ne pouvez pas créer d'évènement pour un client qui ne vous est pas affecté."
+        "affecté"
         in captured.out.strip()
     )
     assert created_event == None

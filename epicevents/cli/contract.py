@@ -1,4 +1,7 @@
 import typer
+from rich import print
+from rich.console import Console
+from rich.table import Table
 from typing_extensions import Annotated
 from peewee import DoesNotExist
 from datetime import datetime
@@ -18,21 +21,47 @@ from epicevents.cli.collaborator import (
 app = typer.Typer()
 
 
+def _create_contracts_table():
+    table = Table(title="Tableau des contrats")
+    table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
+    table.add_column("[Client]", justify="center", no_wrap=True, style="orange_red1")
+    table.add_column("[Commercial associé]", justify="center", no_wrap=True, style="yellow")
+    table.add_column("[Montant total]", justify="center", no_wrap=True, style="plum4")
+    table.add_column("[Montant restant dû]", justify="center", no_wrap=True, style="plum4")
+    table.add_column("[Date de création]", justify="center", no_wrap=True, style="purple4")
+    table.add_column("[Contrat signé ?]", justify="center", no_wrap=True, style="blue")
+    
+    return table
+
+
+def _add_rows_in_contracts_table(contract, table):
+    table.add_row(
+                    f"{contract.id}", f"{contract.client.first_name} {contract.client.name}", f"{contract.collaborator.first_name} {contract.collaborator.name}", f"{contract.total_sum}", f"{contract.amount_due}", f"{contract.creation_date}", f"{contract.signed}"
+                )
+
+
+def _print_table(queryset):
+    table = _create_contracts_table()
+
+    for contract in queryset:
+        _add_rows_in_contracts_table(contract, table)
+    
+    console = Console()
+    console.print(table)
+
+
 @app.command()
 def list():
     """Lists all contracts."""
     token_check = clicollaborator._verify_token()
     if token_check:
         queryset = Contract.select()
-
-        for contract in queryset:
-            if len(Contract) == 0:
-                print("La base de donnée ne contient aucun contrat.")
-
-            else:
-                print(
-                    f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}"
-                )
+        
+        if len(queryset) == 0:
+            print("La base de donnée ne contient aucun contrat.")
+            raise typer.Exit()
+        
+        _print_table(queryset)
 
     else:
         print("Veuillez vous authentifier et réessayer.")
@@ -198,22 +227,24 @@ def filter(
         if int(collaborator_department) == SALES_DEPARTMENT_ID:
             if ns:
                 queryset = Contract.select().where(Contract.signed == False)
-
-                for contract in queryset:
-                    print(
-                        f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}"
-                    )
+                
+                if len(queryset) == 0:
+                    print(":white_check_mark: :white_check_mark: :white_check_mark: Tous les contrats sont signés ! :white_check_mark: :white_check_mark: :white_check_mark:")
+                    raise typer.Exit()
+                
+                _print_table(queryset)
 
             if u:
                 queryset = Contract.select().where(
                     (Contract.amount_due > 0) | (Contract.amount_due == None)
                 )
-
-                for contract in queryset:
-                    print(
-                        f"[ID] : {contract.id} -- [Client] : {contract.client.first_name} {contract.client.name} -- [Commercial associé] : {contract.collaborator.first_name} {contract.collaborator.name} -- [Montant total] : {contract.total_sum} -- [Montant restant dû] : {contract.amount_due} -- [Date de création] : {contract.creation_date} -- [Contrat signé ?] : {contract.signed}"
-                    )
-
+                
+                if len(queryset) == 0:
+                    print(":white_check_mark: :white_check_mark: :white_check_mark: Tous les contrats sont payés ! :white_check_mark: :white_check_mark: :white_check_mark:")
+                    raise typer.Exit()
+                
+                _print_table(queryset)
+                
             elif not (ns or u):
                 print("Vous n'avez pas sélectionné de filtre à appliquer.")
                 raise typer.Exit()

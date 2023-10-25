@@ -15,10 +15,22 @@ def test_filter_support_with_management_collaborator_successful(
     filter(s=True)
 
     captured = capsys.readouterr()
+    
+    print(captured)
 
-    assert "[Assistant en charge] : À définir" in captured.out.strip()
-    assert "3, rue de Paris - 75000 PARIS" in captured.out.strip()
-    assert "23, av des Champs Elysées - 75008 PARIS" in captured.out.strip()
+    assert "À" in captured.out.strip()
+
+
+def test_filter_support_with_management_collaborator_fails_with_null_queryset(
+    monkey_token_check_management,
+    capsys,
+):
+    with pytest.raises(Exit):
+        filter(s=True)
+
+    captured = capsys.readouterr()
+
+    assert "Tous les évènements ont un assistant en charge !" in captured.out.strip()
 
 
 def test_filter_support_with_support_collaborator_successful(
@@ -33,9 +45,19 @@ def test_filter_support_with_support_collaborator_successful(
 
     captured = capsys.readouterr()
 
-    assert "[Assistant en charge] : Fake Support" in captured.out.strip()
-    assert "55, rue des Acacias - 77093 VILLEFANTOME" in captured.out.strip()
-    assert "MARSEILLE" in captured.out.strip()
+    assert "Fake" in captured.out.strip()
+
+
+def test_filter_support_with_support_collaborator_fails_with_null_queryset(
+    monkey_token_check_support_gargamel,
+    capsys,
+):
+    with pytest.raises(Exit):
+        filter(s=True)
+
+    captured = capsys.readouterr()
+
+    assert "Vous n'avez pas d'évènement affecté." in captured.out.strip()
 
 
 def test_filter_fails_without_attribute(

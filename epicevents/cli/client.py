@@ -1,4 +1,7 @@
 import os, typer
+from rich import print
+from rich.console import Console
+from rich.table import Table
 from peewee import DoesNotExist
 from datetime import datetime
 from typing_extensions import Annotated
@@ -17,23 +20,50 @@ from .collaborator import _verify_token
 app = typer.Typer()
 
 
+def _create_clients_table():
+    table = Table(title="Tableau des clients")
+    table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
+    table.add_column("[Prénom]", justify="center", no_wrap=True, style="orange_red1")
+    table.add_column("[Nom]", justify="center", no_wrap=True, style="orange_red1")
+    table.add_column("[Email]", justify="center", no_wrap=True, style="yellow")
+    table.add_column("[Téléphone]", justify="center", no_wrap=True, style="yellow")
+    table.add_column("[Entreprise]", justify="center", no_wrap=True, style="plum4")
+    table.add_column("[Date de création]", justify="center", no_wrap=True, style="purple4")
+    table.add_column("[Dernier contact]", justify="center", no_wrap=True, style="purple4")
+    table.add_column("[Commercial associé]", justify="center", no_wrap=True, style="blue")
+    
+    return table
+
+
+def _add_rows_in_clients_table(client, table):
+    table.add_row(
+                    f"{client.id}", f"{client.first_name}", f"{client.name}", f"{client.email}", f"{client.phone}", f"{client.company.name}", f"{client.creation_date} ", f"{client.last_update}", f"{client.collaborator.first_name} {client.collaborator.name}"
+                )
+
+
+def _print_table(queryset):
+    table = _create_clients_table()
+    
+    for client in queryset:
+        _add_rows_in_clients_table(client, table)
+    
+    console = Console()
+    console.print(table)
+
+
 @app.command()
 def list():
     """Lists all clients."""
     token_check = clicollaborator._verify_token()
     if token_check:
         queryset = Client.select()
-
-        for client in queryset:
-            if len(Client) == 0:
-                print("La base de donnée ne contient aucun client.")
-                raise typer.Exit()
-
-            else:
-                print(
-                    f"[ID] : {client.id} -- [Prénom] : {client.first_name} -- [Nom] : {client.name} -- [Email] : {client.email} -- [Téléphone] : {client.phone} -- [Entreprise] : {client.company.name} -- [Date de création] : {client.creation_date} -- [Dernier contact] : {client.last_update} -- Commercial associé : {client.collaborator.first_name} {client.collaborator.name}"
-                )
-
+        
+        if len(queryset) == 0:
+            print("La base de donnée ne contient aucun client.")
+            raise typer.Exit()
+        
+        _print_table(queryset)
+        
     else:
         print("Veuillez vous authentifier et réessayer.")
         raise typer.Exit()

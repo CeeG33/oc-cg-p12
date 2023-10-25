@@ -8,8 +8,18 @@ def test_list_successful(monkey_token_check_management, fake_client, capsys):
     list()
 
     captured = capsys.readouterr()
+    
+    print(captured)
 
-    assert "[ID]" in captured.out.strip()
+    assert "Tableau des clients" in captured.out.strip()
+    
+def test_list_fails_with_empty_database(monkey_token_check_management, capsys):
+    with pytest.raises(Exit):
+        list()
+    
+    captured = capsys.readouterr()
+
+    assert "La base de donnée ne contient aucun client." in captured.out.strip()
 
 def test_list_token_fails(monkey_token_check_false, fake_client, capsys):
     with pytest.raises(Exit):
