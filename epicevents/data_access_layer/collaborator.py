@@ -24,7 +24,7 @@ class Collaborator(BaseModel):
         self._validate_email()
         self.password = ph.hash(self.password)
         self.first_name.capitalize()
-        self.name.capitalize()
+        self.name.upper()
         super().save(*args, **kwargs)
 
     def _validate_name(self):
