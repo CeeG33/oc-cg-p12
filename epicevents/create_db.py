@@ -16,13 +16,17 @@ psql_db.create_tables([Client, Collaborator, Company, Contract, Department, Even
 # Department.create(name="Sales")
 # Department.create(name="Support")
 
-Collaborator.create(
-    first_name="Admin",
-    name="Test",
-    email="admin@epicevents.com",
-    password="admin",
-    department=1,
-)
+# Company.create(name="L'Oréal")
+# Company.create(name="Ubisoft")
+# Company.create(name="Riot Games")
+
+# Collaborator.create(
+#     first_name="Admin",
+#     name="Test",
+#     email="admin@epicevents.com",
+#     password="admin",
+#     department=1,
+# )
 
 # Collaborator.delete_by_id(6)
 

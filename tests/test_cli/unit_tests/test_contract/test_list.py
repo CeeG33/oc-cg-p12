@@ -11,7 +11,7 @@ def test_list_successful(monkey_token_check_management, fake_contract, capsys):
     captured = capsys.readouterr()
 
     assert "Tableau des contrats" in captured.out.strip()
-    
+
 
 def test_list_fails_with_empty_database(monkey_token_check_management, capsys):
     with pytest.raises(Exit):

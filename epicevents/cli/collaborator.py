@@ -64,14 +64,21 @@ def _create_collaborators_table():
     table.add_column("[Prénom]", justify="center", no_wrap=True, style="orange_red1")
     table.add_column("[Nom]", justify="center", no_wrap=True, style="orange_red1")
     table.add_column("[Email]", justify="center", no_wrap=True, style="yellow")
-    table.add_column("[Departement]", justify="center", no_wrap=True, style="chartreuse4")
-    
+    table.add_column(
+        "[Departement]", justify="center", no_wrap=True, style="chartreuse4"
+    )
+
     return table
 
 
 def _add_rows_in_collaborators_table(user, table):
-    table.add_row(f"{user.id}", f"{user.first_name}", f"{user.name}", f"{user.email}", f"{user.department.name}"
-                )
+    table.add_row(
+        f"{user.id}",
+        f"{user.first_name}",
+        f"{user.name}",
+        f"{user.email}",
+        f"{user.department.name}",
+    )
 
 
 def _print_table(queryset):
@@ -79,14 +86,26 @@ def _print_table(queryset):
 
     for user in queryset:
         _add_rows_in_collaborators_table(user, table)
-    
+
     console = Console()
     console.print(table)
 
 
 @app.command()
-def login(email: Annotated[str, typer.Option(prompt=True, help="Email du collaborateur - Exemple : exemple@email.com")],
-          password: Annotated[str, typer.Option(prompt=True, help= "Mot de passe", confirmation_prompt=True, hide_input=True)]):
+def login(
+    email: Annotated[
+        str,
+        typer.Option(
+            prompt=True, help="Email du collaborateur - Exemple : exemple@email.com"
+        ),
+    ],
+    password: Annotated[
+        str,
+        typer.Option(
+            prompt=True, help="Mot de passe", confirmation_prompt=True, hide_input=True
+        ),
+    ],
+):
     """Logs into the software."""
     collaborator = Collaborator.get_or_none(Collaborator.email == email)
 
@@ -117,13 +136,13 @@ def list():
 
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
             queryset = Collaborator.select()
-            
+
             if len(queryset) == 0:
                 print("La base de donnée ne contient aucun collaborateur.")
                 raise typer.Exit()
-            
+
             _print_table(queryset)
-            
+
         else:
             print("Action restreinte.")
             raise typer.Exit()
@@ -134,11 +153,38 @@ def list():
 
 
 @app.command()
-def create(first_name: Annotated[str, typer.Option(prompt="Prénom", help="Prénom du collaborateur - Exemple : Alain")],
-           name: Annotated[str, typer.Option(prompt="Nom", help="Nom du collaborateur - Exemple : Terieur")],
-           password: Annotated[str, typer.Option(prompt="Mot de passe", help= "Mot de passe du collaborateur", confirmation_prompt=True, hide_input=True)],
-           email: Annotated[str, typer.Option(prompt="Email", help="Adresse mail du collaborateur - Exemple : alain.terieur@mail.com")],
-           department: Annotated[int, typer.Option(prompt="N° de département", help="Numéro de département du collaborateur - Rappel : 1 > Gestion - 2 > Commercial - 3 > Support")]):
+def create(
+    first_name: Annotated[
+        str,
+        typer.Option(prompt="Prénom", help="Prénom du collaborateur - Exemple : Alain"),
+    ],
+    name: Annotated[
+        str, typer.Option(prompt="Nom", help="Nom du collaborateur - Exemple : Terieur")
+    ],
+    password: Annotated[
+        str,
+        typer.Option(
+            prompt="Mot de passe",
+            help="Mot de passe du collaborateur",
+            confirmation_prompt=True,
+            hide_input=True,
+        ),
+    ],
+    email: Annotated[
+        str,
+        typer.Option(
+            prompt="Email",
+            help="Adresse mail du collaborateur - Exemple : alain.terieur@mail.com",
+        ),
+    ],
+    department: Annotated[
+        int,
+        typer.Option(
+            prompt="N° de département",
+            help="Numéro de département du collaborateur - Rappel : 1 > Gestion - 2 > Commercial - 3 > Support",
+        ),
+    ],
+):
     """Creates a new collaborator."""
     token_check = _verify_token()
     if token_check:
@@ -169,13 +215,31 @@ def create(first_name: Annotated[str, typer.Option(prompt="Prénom", help="Prén
 
 @app.command()
 def update(
-    collaborator_id: Annotated[int, typer.Argument(help="N° du collaborateur à modifier - Exemple : 1")],
-    new_value: Annotated[str, typer.Argument(help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !")],
-    first_name: Annotated[bool, typer.Option("-fn", help="Modifier le prénom - Exemple : Alain")] = False,
-    name: Annotated[bool, typer.Option("-n", help="Modifier le nom - Exemple : Terieur")] = False,
-    email: Annotated[bool, typer.Option("-e", help="Modifier l'email - Exemple : alain.terieur@mail.com")] = False,
-    password: Annotated[bool, typer.Option("-p" , help="Modifier le mot de passe")] = False,
-    department: Annotated[bool, typer.Option("-d", help="Modifier le département - Exemple : 1")] = False
+    collaborator_id: Annotated[
+        int, typer.Argument(help="N° du collaborateur à modifier - Exemple : 1")
+    ],
+    new_value: Annotated[
+        str,
+        typer.Argument(
+            help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !"
+        ),
+    ],
+    first_name: Annotated[
+        bool, typer.Option("-fn", help="Modifier le prénom - Exemple : Alain")
+    ] = False,
+    name: Annotated[
+        bool, typer.Option("-n", help="Modifier le nom - Exemple : Terieur")
+    ] = False,
+    email: Annotated[
+        bool,
+        typer.Option("-e", help="Modifier l'email - Exemple : alain.terieur@mail.com"),
+    ] = False,
+    password: Annotated[
+        bool, typer.Option("-p", help="Modifier le mot de passe")
+    ] = False,
+    department: Annotated[
+        bool, typer.Option("-d", help="Modifier le département - Exemple : 1")
+    ] = False,
 ):
     """Updates a given collaborator."""
     token_check = _verify_token()
@@ -263,7 +327,16 @@ def update(
 
 
 @app.command()
-def delete(collaborator_id: Annotated[int, typer.Option(prompt="N° du collaborateur", confirmation_prompt=True, help="Numéro du collaborateur")]):
+def delete(
+    collaborator_id: Annotated[
+        int,
+        typer.Option(
+            prompt="N° du collaborateur",
+            confirmation_prompt=True,
+            help="Numéro du collaborateur",
+        ),
+    ]
+):
     """Deletes a collaborator."""
     token_check = _verify_token()
     if token_check:

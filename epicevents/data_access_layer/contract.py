@@ -36,7 +36,7 @@ class Contract(BaseModel):
         if self.amount_due != None and not isinstance(self.amount_due, (int, float)):
             raise ValueError("Erreur : Veuillez entrer un montant valide.")
 
-        if self.signed not in (True, False):
+        if self.signed not in ("True", "False", True, False):
             raise ValueError(
                 "Erreur : Le champ signed doit être rempli avec True(= contrat signé) ou False(=contrat non signé)."
             )

@@ -10,9 +10,11 @@ def test_list_successful(monkey_token_check_management, fake_event, capsys):
     captured = capsys.readouterr()
 
     assert "Tableau des évènements" in captured.out.strip()
-    
 
-def test_list_unsuccessful_with_null_database(monkey_token_check_support_gargamel, capsys):
+
+def test_list_unsuccessful_with_null_database(
+    monkey_token_check_support_gargamel, capsys
+):
     with pytest.raises(Exit):
         list()
 

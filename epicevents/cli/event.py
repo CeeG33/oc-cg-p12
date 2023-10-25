@@ -27,23 +27,43 @@ def _create_events_table():
     table.add_column("[Date de début]", justify="center", no_wrap=True, style="plum4")
     table.add_column("[Date de fin]", justify="center", no_wrap=True, style="plum4")
     table.add_column("[Localisation]", justify="center", no_wrap=True, style="purple4")
-    table.add_column("[Nombre de participants]", justify="center", no_wrap=True, style="blue")
+    table.add_column(
+        "[Nombre de participants]", justify="center", no_wrap=True, style="blue"
+    )
     table.add_column("[Notes]", justify="left", style="yellow")
-    table.add_column("[Assistant en charge]", justify="center", no_wrap=True, style="red")
-    
+    table.add_column(
+        "[Assistant en charge]", justify="center", no_wrap=True, style="red"
+    )
+
     return table
 
 
 def _add_rows_in_events_table(event, table):
     if event.support is None:
         table.add_row(
-                    f"{event.id}", f"{event.contract.id}", f"{event.contract.client.first_name} {event.contract.client.name}", f"{event.start_date}", f"{event.end_date}", f"{event.location}", f"{event.attendees}", f"{event.notes}", "À définir"
-                )
-        
+            f"{event.id}",
+            f"{event.contract.id}",
+            f"{event.contract.client.first_name} {event.contract.client.name}",
+            f"{event.start_date}",
+            f"{event.end_date}",
+            f"{event.location}",
+            f"{event.attendees}",
+            f"{event.notes}",
+            "À définir",
+        )
+
     else:
         table.add_row(
-                        f"{event.id}", f"{event.contract.id}", f"{event.contract.client.first_name} {event.contract.client.name}", f"{event.start_date}", f"{event.end_date}", f"{event.location}", f"{event.attendees}", f"{event.notes}", f"{event.support.first_name} {event.support.name}"
-                    )
+            f"{event.id}",
+            f"{event.contract.id}",
+            f"{event.contract.client.first_name} {event.contract.client.name}",
+            f"{event.start_date}",
+            f"{event.end_date}",
+            f"{event.location}",
+            f"{event.attendees}",
+            f"{event.notes}",
+            f"{event.support.first_name} {event.support.name}",
+        )
 
 
 def _print_table(queryset):
@@ -51,7 +71,7 @@ def _print_table(queryset):
 
     for event in queryset:
         _add_rows_in_events_table(event, table)
-    
+
     console = Console()
     console.print(table)
 
@@ -66,7 +86,7 @@ def list():
         if len(queryset) == 0:
             print("La base de donnée ne contient aucun évènement.")
             raise typer.Exit()
-        
+
         _print_table(queryset)
 
     else:
@@ -75,7 +95,14 @@ def list():
 
 
 @app.command()
-def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements en fonction des droits du collaborateur.")] = False):
+def filter(
+    s: Annotated[
+        bool,
+        typer.Option(
+            "-s", help="Filtre les évènements en fonction des droits du collaborateur."
+        ),
+    ] = False
+):
     """Filters the events depending on the option selected."""
     token_check = clicollaborator._verify_token()
     if token_check:
@@ -91,9 +118,11 @@ def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements e
                     queryset = Event.select().where(Event.support == None)
 
                     if len(queryset) == 0:
-                        print(":white_check_mark: :white_check_mark: :white_check_mark: Tous les évènements ont un assistant en charge ! :white_check_mark: :white_check_mark: :white_check_mark:")
+                        print(
+                            ":white_check_mark: :white_check_mark: :white_check_mark: Tous les évènements ont un assistant en charge ! :white_check_mark: :white_check_mark: :white_check_mark:"
+                        )
                         raise typer.Exit()
-                        
+
                     _print_table(queryset)
 
                 elif int(collaborator_department) == SUPPORT_DEPARTMENT_ID:
@@ -103,7 +132,7 @@ def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements e
                     if len(queryset) == 0:
                         print("Vous n'avez pas d'évènement affecté.")
                         raise typer.Exit()
-                        
+
                     _print_table(queryset)
 
             elif not s:
@@ -121,15 +150,46 @@ def filter(s: Annotated[bool, typer.Option("-s", help="Filtre les évènements e
 
 @app.command()
 def update(
-    event_id: Annotated[int, typer.Argument(help="N° de l'évènement à modifier - Exemple : 1")],
-    new_value: Annotated[str, typer.Argument(help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !")],
-    contract: Annotated[bool, typer.Option("-c", help="Modifier le numéro du contrat - Exemple : 1")] = False,
-    start_date: Annotated[bool, typer.Option("-d", help="Modifier la date de début - Exemple : 2023-12-24")] = False,
-    end_date: Annotated[bool, typer.Option("-ed", help="Modifier la date de fin - Exemple : 2023-12-24")] = False,
-    location: Annotated[bool, typer.Option("-l", help="Modifier la localisation - Exemple : 42, rue du Vieux Pont - 92000 NANTERRE")] = False,
-    attendees: Annotated[bool, typer.Option("-a", help="Modifier le nombre de participants - Exemple : 4")] = False,
-    notes: Annotated[bool, typer.Option("-n", help="Modifier les notes - Exemple : Prévoir des bouteilles d'eau")] = False,
-    support: Annotated[bool, typer.Option("-s", help="Modifier le numéro du support associé - Exemple : 1")] = False,
+    event_id: Annotated[
+        int, typer.Argument(help="N° de l'évènement à modifier - Exemple : 1")
+    ],
+    new_value: Annotated[
+        str,
+        typer.Argument(
+            help="Nouvelle valeur à appliquer - La valeur doit être compatible avec le champ modifié !"
+        ),
+    ],
+    contract: Annotated[
+        bool, typer.Option("-c", help="Modifier le numéro du contrat - Exemple : 1")
+    ] = False,
+    start_date: Annotated[
+        bool,
+        typer.Option("-d", help="Modifier la date de début - Exemple : 2023-12-24"),
+    ] = False,
+    end_date: Annotated[
+        bool, typer.Option("-ed", help="Modifier la date de fin - Exemple : 2023-12-24")
+    ] = False,
+    location: Annotated[
+        bool,
+        typer.Option(
+            "-l",
+            help="Modifier la localisation - Exemple : 42, rue du Vieux Pont - 92000 NANTERRE",
+        ),
+    ] = False,
+    attendees: Annotated[
+        bool,
+        typer.Option("-a", help="Modifier le nombre de participants - Exemple : 4"),
+    ] = False,
+    notes: Annotated[
+        bool,
+        typer.Option(
+            "-n", help="Modifier les notes - Exemple : Prévoir des bouteilles d'eau"
+        ),
+    ] = False,
+    support: Annotated[
+        bool,
+        typer.Option("-s", help="Modifier le numéro du support associé - Exemple : 1"),
+    ] = False,
 ):
     """Updates a given event."""
     token_check = clicollaborator._verify_token()
@@ -232,13 +292,41 @@ def update(
 
 @app.command()
 def create(
-    contract: Annotated[int, typer.Option(prompt="N° du contrat", help="Numéro du contrat associé - Exemple : 1")],
-    start_date: Annotated[str, typer.Option(prompt="Date de début", help="Date de début - Exemple : 2023-12-24")],
-    end_date: Annotated[str, typer.Option(prompt="Date de fin", help="Date de fin - Exemple : 2023-12-24")],
-    location: Annotated[str, typer.Option(prompt="Localisation", help="Localisation - Exemple : 42, rue du Vieux Pont - 92000 NANTERRE")],
-    attendees: Annotated[int, typer.Option(prompt="Nombre de participants", help="Nombre de participants - Exemple : 4")],
-    notes: Annotated[str, typer.Option(help="Notes - Exemple : Prévoir des bouteilles d'eau")] = "",
-    support: Annotated[int, typer.Option(help="Numéro du support associé - Exemple : 2")] = None,
+    contract: Annotated[
+        int,
+        typer.Option(
+            prompt="N° du contrat", help="Numéro du contrat associé - Exemple : 1"
+        ),
+    ],
+    start_date: Annotated[
+        str,
+        typer.Option(
+            prompt="Date de début", help="Date de début - Exemple : 2023-12-24"
+        ),
+    ],
+    end_date: Annotated[
+        str,
+        typer.Option(prompt="Date de fin", help="Date de fin - Exemple : 2023-12-24"),
+    ],
+    location: Annotated[
+        str,
+        typer.Option(
+            prompt="Localisation",
+            help="Localisation - Exemple : 42, rue du Vieux Pont - 92000 NANTERRE",
+        ),
+    ],
+    attendees: Annotated[
+        int,
+        typer.Option(
+            prompt="Nombre de participants", help="Nombre de participants - Exemple : 4"
+        ),
+    ],
+    notes: Annotated[
+        str, typer.Option(help="Notes - Exemple : Prévoir des bouteilles d'eau")
+    ] = "",
+    support: Annotated[
+        int, typer.Option(help="Numéro du support associé - Exemple : 2")
+    ] = None,
 ):
     """Creates a new event."""
     token_check = clicollaborator._verify_token()
@@ -250,7 +338,7 @@ def create(
             target_contract = Contract.get_or_none(Contract.id == contract)
 
             if target_contract:
-                if target_contract.client.collaborator.id != collaborator_id:
+                if target_contract.client.collaborator.id != int(collaborator_id):
                     print(
                         "Vous ne pouvez pas créer d'évènement pour un client qui ne vous est pas affecté."
                     )
@@ -261,14 +349,14 @@ def create(
                         "Vous ne pouvez pas créer d'évènement pour un contrat qui n'est pas signé."
                     )
                     raise typer.Exit()
-                
+
             else:
                 print("Veuillez entrer un numéro de contrat valide.")
                 raise typer.Exit()
-            
+
             if support is not None:
                 support_check = Collaborator.get_or_none(Collaborator.id == support)
-                
+
                 if not support_check:
                     print("Veuillez entrer un numéro de support valide.")
                     raise typer.Exit()

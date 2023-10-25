@@ -116,9 +116,9 @@ def test_collaborator_get_data(fake_department_management):
         password=password,
         department=department,
     )
-    
+
     collaborator_data = collaborator.get_data()
-    
+
     expected_result = {
         "collaborator_id": f"{collaborator.id}",
         "email": f"{collaborator.email}",

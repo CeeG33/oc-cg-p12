@@ -15,13 +15,13 @@ def test_filter_signed_successful(
     filter(ns=True)
 
     captured = capsys.readouterr()
-    
 
     assert "3200.0" in captured.out.strip()
     assert "False" in captured.out.strip()
     assert "True" not in captured.out.strip()
     assert "10000.0" not in captured.out.strip()
     assert "None" not in captured.out.strip()
+
 
 def test_filter_signed_fails_with_null_queryset(
     monkey_token_check_correct_sales,
@@ -33,6 +33,7 @@ def test_filter_signed_fails_with_null_queryset(
     captured = capsys.readouterr()
 
     assert "Tous les contrats sont signés !" in captured.out.strip()
+
 
 def test_filter_unpaid_successful(
     monkey_token_check_correct_sales,
@@ -60,6 +61,7 @@ def test_filter_unpaid_fails_with_null_queryset(
     captured = capsys.readouterr()
 
     assert "Tous les contrats sont payés !" in captured.out.strip()
+
 
 def test_filter_fails_without_attribute(
     monkey_token_check_correct_sales,

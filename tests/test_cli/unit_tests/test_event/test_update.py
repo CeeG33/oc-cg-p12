@@ -18,10 +18,7 @@ def test_contract_update_successful(
 
     assert updated_event.contract.id == fake_contract.id
     assert updated_event.contract.total_sum == fake_contract.total_sum
-    assert (
-        "Contrat"
-        in captured.out.strip()
-    )
+    assert "Contrat" in captured.out.strip()
 
 
 def test_contract_update_fails_with_wrong_id(
@@ -52,10 +49,7 @@ def test_support_update_successful(
 
     assert updated_event.support.id == fake_collaborator_support2.id
     assert updated_event.support.first_name == fake_collaborator_support2.first_name
-    assert (
-        "Assistant en charge"
-        in captured.out.strip()
-    )
+    assert "Assistant en charge" in captured.out.strip()
 
 
 def test_support_update_fails_with_wrong_id(
@@ -66,10 +60,7 @@ def test_support_update_fails_with_wrong_id(
 
     captured = capsys.readouterr()
 
-    assert (
-        "valide"
-        in captured.out.strip()
-    )
+    assert "valide" in captured.out.strip()
 
 
 def test_support_update_fails_with_not_support_collaborator(
@@ -85,10 +76,7 @@ def test_support_update_fails_with_not_support_collaborator(
 
     captured = capsys.readouterr()
 
-    assert (
-        "valide"
-        in captured.out.strip()
-    )
+    assert "valide" in captured.out.strip()
 
 
 def test_start_date_update_successful(
@@ -102,10 +90,7 @@ def test_start_date_update_successful(
     captured = capsys.readouterr()
 
     assert updated_event.start_date == new_start_date
-    assert (
-        f"Date de début"
-        in captured.out.strip()
-    )
+    assert f"Date de début" in captured.out.strip()
     assert (
         "Veuillez également penser à modifier la date de fin." in captured.out.strip()
     )
@@ -120,10 +105,7 @@ def test_end_date_update_successful(monkey_token_check_management, fake_event, c
     captured = capsys.readouterr()
 
     assert updated_event.end_date == new_end_date
-    assert (
-        f"Date de fin"
-        in captured.out.strip()
-    )
+    assert f"Date de fin" in captured.out.strip()
     assert (
         "Avez-vous également pensé à modifier la date de début ?"
         in captured.out.strip()
@@ -139,10 +121,7 @@ def test_location_update_successful(monkey_token_check_management, fake_event, c
     captured = capsys.readouterr()
 
     assert updated_event.location == new_location
-    assert (
-        f"Localisation"
-        in captured.out.strip()
-    )
+    assert f"Localisation" in captured.out.strip()
 
 
 def test_attendees_update_successful(monkey_token_check_management, fake_event, capsys):
@@ -154,10 +133,7 @@ def test_attendees_update_successful(monkey_token_check_management, fake_event, 
     captured = capsys.readouterr()
 
     assert updated_event.attendees == new_attendees
-    assert (
-        f"Nombre de participants"
-        in captured.out.strip()
-    )
+    assert f"Nombre de participants" in captured.out.strip()
 
 
 def test_notes_update_successful(monkey_token_check_management, fake_event, capsys):
@@ -169,10 +145,7 @@ def test_notes_update_successful(monkey_token_check_management, fake_event, caps
     captured = capsys.readouterr()
 
     assert updated_event.notes == new_notes
-    assert (
-        f"Notes"
-        in captured.out.strip()
-    )
+    assert f"Notes" in captured.out.strip()
 
 
 def test_update_fails_without_attribute(
