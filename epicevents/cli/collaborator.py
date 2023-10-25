@@ -192,6 +192,12 @@ def create(
         collaborator_id = token_check[1]["collaborator_id"]
 
         if int(collaborator_department) == MANAGEMENT_DEPARTMENT_ID:
+            department_check = Department.get_or_none(Department.id == int(department))
+
+            if department_check is None:
+                print(f"Aucun département trouvé avec l'ID n°{department}.")
+                raise typer.Exit()
+
             Collaborator.create(
                 first_name=first_name,
                 name=name,

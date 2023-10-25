@@ -102,7 +102,7 @@ def test_collaborator_creation_with_missing_attribute():
         Collaborator.create()
 
 
-def test_collaborator_get_data(fake_department_management):
+def test_collaborator_get_data(fake_department_sales):
     first_name = "Utilisateur"
     name = "Test"
     email = "testing@epicevents.com"

@@ -6,7 +6,10 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_creation_successful(
-    monkey_capture_message_collaborator, monkey_token_check_management, capsys
+    monkey_capture_message_collaborator,
+    monkey_token_check_management,
+    fake_department_management,
+    capsys,
 ):
     create(
         first_name="Collab",
@@ -19,6 +22,23 @@ def test_creation_successful(
     captured = capsys.readouterr()
 
     assert "a été créé avec succès." in captured.out.strip()
+
+
+def test_creation_fails_with_wrong_department(
+    monkey_capture_message_collaborator, monkey_token_check_management, capsys
+):
+    with pytest.raises(Exit):
+        create(
+            first_name="Collab",
+            name="Test",
+            email="collab@test.fr",
+            password="Passtest",
+            department=-100,
+        )
+
+    captured = capsys.readouterr()
+
+    assert "Aucun département trouvé" in captured.out.strip()
 
 
 def test_creation_not_authorized(monkey_token_check_fake_sales, capsys):
