@@ -60,3 +60,58 @@ Un modèle de fichier .env est déjà présent dans le répertoire (>> `.env_tem
 
 __________________________________________
 
+
+# EpicEvents CRM Software: Internal CRM Software
+
+EpicEvents CRM Software is a locally executable software designed to collect and manage client data and their events while facilitating communication among various departments within the EpicEvents company. This application is implemented as a Command-Line Interface (CLI) and allows for reading, creating, and updating collaborators, clients, contracts, and events.
+
+## Prerequisites
+
+This software has been developed using the PostgreSQL database management system (DBMS). Therefore, the installation of PostgreSQL is required. Additionally, it is highly recommended to install the pgAdmin4 interface to facilitate database management.
+
+For more information on installing PostgreSQL, please refer to the official documentation available [at this link](https://www.postgresql.org/docs/current/).
+
+## Installation
+
+This software can be installed by following the steps below.
+
+1. Clone this code repository using the command: `$ git clone https://github.com/CeeG33/oc-cg-p12` (Alternatively, you can download the code [as a ZIP archive](https://github.com/CeeG33/oc-cg-p12/archive/refs/heads/main.zip).
+2. Navigate to the root directory of oc-cg-p12 directory from a terminal using the command: `$ cd oc-cg-p12`.
+3. Create a virtual environment for the project with the following command:
+  On Windows: `$ python -m venv env`
+  On MacOS or Linux: `$ python3 -m venv env`
+4. Activate the virtual environment:
+  On Windows: `$ env\Scripts\activate`
+  On MacOS or Linux: `$ source env/bin/activate`
+5. Install the project's dependencies using the command: `$ pip install -r requirements.txt`.
+6. Create a file named `.env` in the root of the oc-cg-p12 directory and fill it with the necessary environment variables. For more information on environment variables, please refer to the dedicated section below.
+7. Create the initial database tables with the command: `$ python epicevents/create_db.py`.
+8. You can now access the program using the following command: `$ python -m epicevents`.
+
+Steps 1 to 3 and 5 to 7 are only required for the initial installation. For subsequent launches of the software, you only need to execute steps 4 and 8 from the project's root directory.
+
+All available commands within the software are documented and you can view the documentation directly from your terminal using the `--help` command. Here are some examples:
+
+```
+$ python -m epicevents --help
+$ python -m epicevents collaborators --help
+$ python -m epicevents collaborators create --help
+```
+
+
+## Environment Variables
+
+It is essential to configure the environment variables for the software to function correctly. You need to define these variables yourself. Here are the expected environment variables and their purpose:
+
+```
+-DB_NAME >> The name of the database to be used by the software (e.g., epiceventsdb).
+-DB_USER >> The database user's name (e.g., user1).
+-DB_PASSWORD >> The password of the database user (e.g., password).
+-SECRET_KEY >> The key for encoding user passwords (e.g., epiceventssecret).
+-ADMIN_EMAIL >> The email of the administrator account which will be automatically created as the first user of the software (e.g., admin@epicevents.com).
+-ADMIN_PASSWORD >> The password of the administrator account which will be automatically created as the first user of the software (e.g., adminpass).
+-DSN >> The Sentry-generated logging link.
+-TOKEN >> The user identification token for the software - MUST be left empty.
+```
+
+A template for the .env file is already provided in the directory (>> `.env_template`). You can copy and rename it to .env and then fill it with the required environment variables.
