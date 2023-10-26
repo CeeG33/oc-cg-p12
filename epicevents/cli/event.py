@@ -20,6 +20,7 @@ app = typer.Typer()
 
 
 def _create_events_table():
+    """Creates a table structure for displaying event information."""
     table = Table(title="Tableau des évènements")
     table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
     table.add_column("[ID Contrat]", justify="center", no_wrap=True, style="cyan")
@@ -39,6 +40,7 @@ def _create_events_table():
 
 
 def _add_rows_in_events_table(event, table):
+    """Populates rows to the events table."""
     if event.support is None:
         table.add_row(
             f"{event.id}",
@@ -67,6 +69,7 @@ def _add_rows_in_events_table(event, table):
 
 
 def _print_table(queryset):
+    """Prints the contracts list table."""
     table = _create_events_table()
 
     for event in queryset:

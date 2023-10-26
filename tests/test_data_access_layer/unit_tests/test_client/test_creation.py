@@ -5,6 +5,11 @@ from epicevents.data_access_layer.client import Client
 
 
 def test_client_creation(fake_company, fake_collaborator_management):
+    """
+    GIVEN a fake company and a fake management collaborator
+    WHEN the Client.create() function is called to create a client with valid attributes
+    THEN the function should create a client with the provided attributes, and the client's attributes should match the provided values
+    """
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
@@ -35,6 +40,11 @@ def test_client_creation(fake_company, fake_collaborator_management):
 def test_client_creation_with_wrong_first_name(
     fake_company, fake_collaborator_management
 ):
+    """
+    GIVEN a fake company and a fake management collaborator
+    WHEN the Client.create() function is called to create a client with an invalid first name
+    THEN the function should raise a ValueError with an error message indicating that a valid first name is required
+    """
     first_name = "465456"
     name = "Test"
     email = "test@client.fr"
@@ -58,6 +68,11 @@ def test_client_creation_with_wrong_first_name(
 
 
 def test_client_creation_with_wrong_name(fake_company, fake_collaborator_management):
+    """
+    GIVEN a fake company and a fake management collaborator
+    WHEN the Client.create() function is called to create a client with an invalid name
+    THEN the function should raise a ValueError with an error message indicating that a valid name is required
+    """
     first_name = "Client"
     name = "465456"
     email = "test@client.fr"
@@ -81,6 +96,11 @@ def test_client_creation_with_wrong_name(fake_company, fake_collaborator_managem
 
 
 def test_client_creation_with_wrong_email(fake_company, fake_collaborator_management):
+    """
+    GIVEN a fake company and a fake management collaborator
+    WHEN the Client.create() function is called to create a client with an invalid email
+    THEN the function should raise a ValueError with an error message indicating that a valid email is required
+    """
     first_name = "Client"
     name = "Test"
     email = "5465465"
@@ -104,6 +124,11 @@ def test_client_creation_with_wrong_email(fake_company, fake_collaborator_manage
 
 
 def test_client_creation_with_wrong_company_id(fake_collaborator_management):
+    """
+    GIVEN a fake management collaborator
+    WHEN the Client.create() function is called to create a client with an invalid company ID (non-existent company)
+    THEN the function should raise a DoesNotExist exception with an error message indicating that a valid company is required
+    """
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
@@ -129,6 +154,11 @@ def test_client_creation_with_wrong_company_id(fake_collaborator_management):
 def test_client_creation_with_wrong_creation_date(
     fake_company, fake_collaborator_management
 ):
+    """
+    GIVEN a fake company and a fake management collaborator
+    WHEN the Client.create() function is called to create a client with an invalid creation date (non-date value)
+    THEN the function should raise a ValueError with an error message indicating that a valid creation date is required
+    """
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
@@ -152,6 +182,11 @@ def test_client_creation_with_wrong_creation_date(
 
 
 def test_client_creation_with_wrong_collaborator_id(fake_company):
+    """
+    GIVEN a fake company
+    WHEN the Client.create() function is called to create a client with an invalid collaborator ID (non-existent collaborator)
+    THEN the function should raise a DoesNotExist exception with an error message indicating that a valid collaborator is required
+    """
     first_name = "Client"
     name = "Test"
     email = "test@client.fr"
@@ -175,5 +210,9 @@ def test_client_creation_with_wrong_collaborator_id(fake_company):
 
 
 def test_collaborator_creation_with_missing_attribute():
+    """
+    WHEN the Client.create() function is called without specifying any attributes
+    THEN the function should raise a ValueError with an error message indicating that certain attributes are required
+    """
     with pytest.raises(ValueError):
         Client.create()

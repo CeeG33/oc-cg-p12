@@ -9,6 +9,8 @@ from .department import Department
 
 
 class Contract(BaseModel):
+    """Represents a contract in the CRM system."""
+
     client = ForeignKeyField(Client, backref="client")
     collaborator = ForeignKeyField(
         Collaborator, backref="associated_sales", on_delete="SET NULL"
@@ -19,6 +21,12 @@ class Contract(BaseModel):
     signed = BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        """
+        Saves the contract's information with validation checks.
+
+        Raises:
+            ValueError: If required fields are missing or validation checks fail.
+        """
         if not self.client:
             raise ValueError("Erreur : Veuillez renseigner les détails du contrat.")
 
@@ -46,6 +54,12 @@ class Contract(BaseModel):
         super().save(*args, **kwargs)
 
     def _validate_date(self):
+        """
+        Validates the date.
+
+        Raises:
+            ValueError: If the date format is incorrect.
+        """
         pattern = r"^\d{4}-\d{2}-\d{2}$"
         pattern2 = r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"
         if not (

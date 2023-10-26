@@ -12,6 +12,11 @@ def test_filter_signed_successful(
     fake_contract_unsigned,
     capsys,
 ):
+    """
+    GIVEN a sales collaborator with the correct token and a set of contracts with different signed statuses
+    WHEN the filter() function is called to filter signed contracts
+    THEN the function should display contracts with signed status 'True' and not display contracts with signed status 'False'
+    """
     filter(ns=True)
 
     captured = capsys.readouterr()
@@ -27,6 +32,11 @@ def test_filter_signed_fails_with_null_queryset(
     monkey_token_check_correct_sales,
     capsys,
 ):
+    """
+    GIVEN a sales collaborator with the correct token and an empty set of contracts
+    WHEN the filter() function is called to filter signed contracts
+    THEN the function should raise an exit error, and an error message should indicate that all contracts are signed
+    """
     with pytest.raises(Exit):
         filter(ns=True)
 
@@ -43,6 +53,11 @@ def test_filter_unpaid_successful(
     fake_contract_unsigned,
     capsys,
 ):
+    """
+    GIVEN a sales collaborator with the correct token and a set of contracts with different unpaid amounts
+    WHEN the filter() function is called to filter unpaid contracts
+    THEN the function should display contracts with unpaid amount or with 'None' value
+    """
     filter(u=True)
 
     captured = capsys.readouterr()
@@ -55,6 +70,11 @@ def test_filter_unpaid_fails_with_null_queryset(
     monkey_token_check_correct_sales,
     capsys,
 ):
+    """
+    GIVEN a sales collaborator with the correct token and an empty set of contracts
+    WHEN the filter() function is called to filter unpaid contracts
+    THEN the function should raise an exit error, and an error message should indicate that all contracts are paid
+    """
     with pytest.raises(Exit):
         filter(u=True)
 
@@ -71,6 +91,11 @@ def test_filter_fails_without_attribute(
     fake_contract_unsigned,
     capsys,
 ):
+    """
+    GIVEN a sales collaborator with the correct token and a set of contracts
+    WHEN the filter() function is called without specifying a filter attribute
+    THEN the function should raise an exit error, and an error message should indicate that no filter was selected
+    """
     with pytest.raises(Exit):
         filter()
 
@@ -87,6 +112,11 @@ def test_filter_not_authorized(
     fake_contract_unsigned,
     capsys,
 ):
+    """
+    GIVEN a support collaborator with the correct token and a set of contracts
+    WHEN the filter() function is called to filter contracts
+    THEN the function should raise an exit error, and an error message should indicate that the action is restricted
+    """
     with pytest.raises(Exit):
         filter()
 
@@ -103,6 +133,11 @@ def test_filter_fails_without_authentication(
     fake_contract_unsigned,
     capsys,
 ):
+    """
+    GIVEN an unauthenticated collaborator and a set of contracts
+    WHEN the filter() function is called to filter contracts
+    THEN the function should raise an exit error, and an error message should indicate that authentication is required
+    """
     with pytest.raises(Exit):
         filter()
 

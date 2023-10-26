@@ -10,6 +10,11 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 def test_client_update_successful(
     monkey_token_check_management, fake_contract, fake_client, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token, a contract, and a new client
+    WHEN the update() function is called to change the contract's client
+    THEN the contract's client should be updated, and a success message should be printed
+    """
     contract = fake_contract
     new_client = fake_client
 
@@ -30,6 +35,11 @@ def test_client_update_successful(
 def test_client_update_fails_with_wrong_id(
     monkey_token_check_management, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token and a contract
+    WHEN the update() function is called to change the contract's client with an invalid client ID
+    THEN the function should raise an exit error, and an error message should indicate that a valid client ID is required
+    """
     contract = fake_contract
 
     with pytest.raises(Exit):
@@ -43,6 +53,11 @@ def test_client_update_fails_with_wrong_id(
 def test_collaborator_update_successful(
     monkey_token_check_management, fake_contract, fake_collaborator_management, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token, a contract, and a new collaborator
+    WHEN the update() function is called to change the contract's collaborator
+    THEN the contract's collaborator should be updated, and a success message should be printed
+    """
     contract = fake_contract
     new_collaborator = fake_collaborator_management
 
@@ -63,6 +78,11 @@ def test_collaborator_update_successful(
 def test_collaborator_update_fails_with_wrong_id(
     monkey_token_check_management, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token and a contract
+    WHEN the update() function is called to change the contract's collaborator with an invalid collaborator ID
+    THEN the function should raise an exit error, and an error message should indicate that a valid collaborator ID is required
+    """
     contract = fake_contract
 
     with pytest.raises(Exit):
@@ -76,6 +96,11 @@ def test_collaborator_update_fails_with_wrong_id(
 def test_total_sum_update_successful(
     monkey_token_check_management, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token and a contract
+    WHEN the update() function is called to change the contract's total sum
+    THEN the contract's total sum should be updated, and a success message should be printed
+    """
     contract = fake_contract
     new_total_sum = 1000
 
@@ -95,6 +120,11 @@ def test_total_sum_update_successful(
 def test_amount_due_update_successful(
     monkey_token_check_management, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token and a contract
+    WHEN the update() function is called to change the contract's amount due
+    THEN the contract's amount due should be updated, and a success message should be printed
+    """
     contract = fake_contract
     new_amount_due = 1000
 
@@ -114,6 +144,11 @@ def test_amount_due_update_successful(
 def test_creation_date_update_successful(
     monkey_token_check_management, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token and a contract
+    WHEN the update() function is called to change the contract's creation date
+    THEN the contract's creation date should be updated, and a success message should be printed
+    """
     contract = fake_contract
     new_creation_date = "2023-10-25"
 
@@ -136,6 +171,11 @@ def test_signed_update_successful(
     fake_contract,
     capsys,
 ):
+    """
+    GIVEN a collaborator with the correct management token, a contract, and the correct capture message monkey patch
+    WHEN the update() function is called to change the contract's signed status
+    THEN the contract's signed status should be updated, and a success message should be printed
+    """
     contract = fake_contract
 
     update(contract.id, True, signed=True)
@@ -154,6 +194,11 @@ def test_signed_update_successful(
 def test_contract_update_fails_without_attributes(
     monkey_token_check_management, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token and a contract
+    WHEN the update() function is called without specifying any attributes to change
+    THEN the function should raise an exit error, and an error message should indicate that no attribute was selected for modification
+    """
     contract = fake_contract
 
     with pytest.raises(Exit):
@@ -167,6 +212,11 @@ def test_contract_update_fails_without_attributes(
 def test_contract_update_fails_with_wrong_contract_id(
     monkey_token_check_management, capsys
 ):
+    """
+    GIVEN a collaborator with the correct management token
+    WHEN the update() function is called with an invalid contract ID
+    THEN the function should raise an exit error, and an error message should indicate that no contract was found with the given ID
+    """
     fake_id = 100
     with pytest.raises(Exit):
         update(fake_id, 2, client=True)
@@ -179,6 +229,11 @@ def test_contract_update_fails_with_wrong_contract_id(
 def test_contract_update_not_authorized(
     monkey_token_check_support, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the incorrect support token and a contract
+    WHEN the update() function is called to update the contract
+    THEN the function should raise an exit error, and an error message should indicate that this action is restricted
+    """
     contract = fake_contract
 
     with pytest.raises(Exit):
@@ -192,6 +247,11 @@ def test_contract_update_not_authorized(
 def test_contract_update_fails_without_authentication(
     monkey_token_check_false, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with an incorrect token and a contract
+    WHEN the update() function is called to update the contract
+    THEN the function should raise an exit error, and an error message should indicate that authentication is required
+    """
     contract = fake_contract
 
     with pytest.raises(Exit):
@@ -205,6 +265,11 @@ def test_contract_update_fails_without_authentication(
 def test_contract_update_fails_with_wrong_salesman(
     monkey_token_check_fake_sales, fake_contract, capsys
 ):
+    """
+    GIVEN a collaborator with the sales token and a contract whose client is not that of the collaborator's
+    WHEN the update() function is called to update the contract
+    THEN the function should raise an exit error, and an error message should indicate that this action is restricted
+    """
     contract = fake_contract
 
     with pytest.raises(Exit):
@@ -218,6 +283,11 @@ def test_contract_update_fails_with_wrong_salesman(
 def test_contract_update_with_correct_salesman_succesful(
     monkey_token_check_correct_sales, fake_contract, fake_client, capsys
 ):
+    """
+    GIVEN a collaborator with the sales token, a contract whose client is that of the collaborator's, and a new client
+    WHEN the update() function is called to change the contract's client
+    THEN the contract's client should be updated, and a success message should be printed
+    """
     print(fake_contract.collaborator.id)
     update(fake_contract.id, fake_client.id, client=True)
 

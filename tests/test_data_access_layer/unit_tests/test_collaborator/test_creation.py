@@ -8,6 +8,11 @@ from epicevents.cli.collaborator import MANAGEMENT_DEPARTMENT_ID
 
 
 def test_collaborator_creation(fake_department_management):
+    """
+    GIVEN a fake management department
+    WHEN the Collaborator.create() function is called to create a collaborator with valid attributes
+    THEN the function should create a collaborator with the provided attributes, and the collaborator's attributes should match the provided values
+    """
     first_name = "Utilisateur"
     name = "Test"
     email = "test@epicevents.com"
@@ -30,6 +35,11 @@ def test_collaborator_creation(fake_department_management):
 
 
 def test_collaborator_creation_with_wrong_first_name():
+    """
+    GIVEN a fake management department
+    WHEN the Collaborator.create() function is called to create a collaborator with an invalid first name (non-alphabetical characters)
+    THEN the function should raise a ValueError with an error message indicating that a valid first name is required
+    """
     first_name = "56465565"
     name = "Test"
     email = "test@epicevents.com"
@@ -47,6 +57,11 @@ def test_collaborator_creation_with_wrong_first_name():
 
 
 def test_collaborator_creation_with_wrong_name():
+    """
+    GIVEN a fake management department
+    WHEN the Collaborator.create() function is called to create a collaborator with an invalid name (non-alphabetical characters)
+    THEN the function should raise a ValueError with an error message indicating that a valid name is required
+    """
     first_name = "Utilisateur"
     name = "56465565"
     email = "test@epicevents.com"
@@ -64,6 +79,11 @@ def test_collaborator_creation_with_wrong_name():
 
 
 def test_collaborator_creation_with_wrong_email():
+    """
+    GIVEN a fake management department
+    WHEN the Collaborator.create() function is called to create a collaborator with an invalid email
+    THEN the function should raise a ValueError with an error message indicating that a valid email is required
+    """
     first_name = "Utilisateur"
     name = "Test"
     email = "56465565"
@@ -81,6 +101,11 @@ def test_collaborator_creation_with_wrong_email():
 
 
 def test_collaborator_creation_with_wrong_department_id():
+    """
+    GIVEN a fake management department
+    WHEN the Collaborator.create() function is called to create a collaborator with an invalid department ID (non-existent department)
+    THEN the function should raise an IntegrityError with an error message indicating that a valid department is required
+    """
     first_name = "Utilisateur"
     name = "Test"
     email = "test@epicevents.com"
@@ -98,11 +123,21 @@ def test_collaborator_creation_with_wrong_department_id():
 
 
 def test_collaborator_creation_with_missing_attribute():
+    """
+    GIVEN a fake management department
+    WHEN the Collaborator.create() function is called without specifying any attributes
+    THEN the function should raise a ValueError with an error message indicating that certain attributes are required
+    """
     with pytest.raises(ValueError):
         Collaborator.create()
 
 
 def test_collaborator_get_data(fake_department_sales):
+    """
+    GIVEN a fake sales department
+    WHEN the Collaborator.create() function is called to create a collaborator with valid attributes
+    THEN the collaborator's get_data() method should return a dictionary with specific collaborator's attributes and values
+    """
     first_name = "Utilisateur"
     name = "Test"
     email = "testing@epicevents.com"

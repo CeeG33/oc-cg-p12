@@ -9,6 +9,11 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 def test_creation_successful(
     monkey_token_check_management, fake_client, fake_collaborator_sales, capsys
 ):
+    """
+    GIVEN a management collaborator with the correct token, an existing client, and a collaborator,
+    WHEN the create() function is called to create a contract
+    THEN a new contract should be created with the provided details, and a success message should be printed
+    """
     client = fake_client
     collaborator = fake_collaborator_sales
     create(client=client.id, collaborator=collaborator.id, total_sum=30000)
@@ -31,6 +36,11 @@ def test_creation_successful(
 def test_creation_with_optional_arguments_successful(
     monkey_token_check_management, fake_client, fake_collaborator_sales, capsys
 ):
+    """
+    GIVEN a management collaborator with the correct token, an existing client, a collaborator, and valid contract details
+    WHEN the create() function is called to create a contract
+    THEN a new contract should be created with the provided details, and a success message should be printed
+    """
     client = fake_client
     collaborator = fake_collaborator_sales
     create(
@@ -60,6 +70,11 @@ def test_creation_with_optional_arguments_successful(
 def test_creation_fails_with_wrong_client_id(
     monkey_token_check_management, fake_collaborator_sales, capsys
 ):
+    """
+    GIVEN a management collaborator with the correct token, an invalid client ID, and a valid collaborator and total sum
+    WHEN the create() function is called to create a contract
+    THEN the function should raise an exit error, and an error message should indicate that no client was found with the provided ID
+    """
     client = -100
     collaborator = fake_collaborator_sales
     with pytest.raises(Exit):
@@ -76,6 +91,11 @@ def test_creation_fails_with_wrong_client_id(
 def test_creation_fails_with_wrong_collaborator_id(
     monkey_token_check_management, fake_client, capsys
 ):
+    """
+    GIVEN a management collaborator with the correct token, an existing client, an invalid collaborator ID, and a valid total sum
+    WHEN the create() function is called to create a contract
+    THEN the function should raise an exit error, and an error message should indicate that no collaborator was found with the provided ID
+    """
     client = fake_client
     collaborator = -100
     with pytest.raises(Exit):
@@ -94,6 +114,11 @@ def test_creation_fails_with_wrong_collaborator_id(
 def test_creation_not_authorized(
     monkey_token_check_correct_sales, fake_client, fake_collaborator_sales, capsys
 ):
+    """
+    GIVEN a sales collaborator with the correct token, an existing client, a collaborator, and valid contract details
+    WHEN the create() function is called to create a contract
+    THEN the function should raise an exit error, and an error message should indicate that the action is restricted
+    """
     client = fake_client
     collaborator = fake_collaborator_sales
     with pytest.raises(Exit):
@@ -117,6 +142,11 @@ def test_creation_not_authorized(
 def test_creation_fails_if_not_authenticated(
     monkey_token_check_false, fake_client, fake_collaborator_sales, capsys
 ):
+    """
+    GIVEN an unauthenticated collaborator, an existing client, a collaborator, and valid contract details
+    WHEN the create() function is called to create a contract
+    THEN the function should raise an exit error, and an error message should indicate that authentication is required
+    """
     client = fake_client
     collaborator = fake_collaborator_sales
     with pytest.raises(Exit):

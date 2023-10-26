@@ -13,6 +13,8 @@ psql_migrator = PostgresqlMigrator(psql_db)
 
 
 class BaseModel(Model):
+    """The base model for Peewee models using PostgreSQL."""
+
     class Meta:
         database = psql_db
         migrator = psql_migrator

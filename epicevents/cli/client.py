@@ -21,6 +21,7 @@ app = typer.Typer()
 
 
 def _create_clients_table():
+    """Creates a table structure for displaying client information."""
     table = Table(title="Tableau des clients")
     table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
     table.add_column("[Prénom]", justify="center", no_wrap=True, style="orange_red1")
@@ -42,6 +43,7 @@ def _create_clients_table():
 
 
 def _add_rows_in_clients_table(client, table):
+    """Populates rows to the client table."""
     table.add_row(
         f"{client.id}",
         f"{client.first_name}",
@@ -56,6 +58,7 @@ def _add_rows_in_clients_table(client, table):
 
 
 def _print_table(queryset):
+    """Prints the clients list table."""
     table = _create_clients_table()
 
     for client in queryset:

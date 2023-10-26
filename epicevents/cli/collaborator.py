@@ -28,19 +28,23 @@ ph = PasswordHasher()
 
 
 def _generate_token(collaborator):
+    """Generates an authentication token for a collaborator."""
     token = jwt.encode(collaborator.get_data(), key=SECRET_KEY, algorithm="HS256")
     return token
 
 
 def _memorize_token(token):
+    """Stores an authentication token on the .env file."""
     set_key(".env", "TOKEN", token)
 
 
 def _read_token():
+    """Reads and retrieves the authentication token."""
     return get_key(".env", "TOKEN")
 
 
 def _verify_token():
+    """Verifies the authenticity and validity of the authentication token."""
     try:
         decoded_payload = jwt.decode(
             _read_token(), key=SECRET_KEY, algorithms=["HS256"]
@@ -59,6 +63,7 @@ def _verify_token():
 
 
 def _create_collaborators_table():
+    """Creates a table structure for displaying collaborator information."""
     table = Table(title="Tableau des collaborateurs")
     table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
     table.add_column("[Prénom]", justify="center", no_wrap=True, style="orange_red1")
@@ -72,6 +77,7 @@ def _create_collaborators_table():
 
 
 def _add_rows_in_collaborators_table(user, table):
+    """Populates rows to the collaborators table."""
     table.add_row(
         f"{user.id}",
         f"{user.first_name}",
@@ -82,6 +88,7 @@ def _add_rows_in_collaborators_table(user, table):
 
 
 def _print_table(queryset):
+    """Print the collaborators list table."""
     table = _create_collaborators_table()
 
     for user in queryset:

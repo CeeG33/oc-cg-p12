@@ -7,6 +7,11 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_creation_successful(monkey_token_check_correct_sales, fake_contract, capsys):
+    """
+    GIVEN a sales collaborator with the correct token, an existing contract, and valid event data
+    WHEN the create() function is called to create an event
+    THEN the event should be created with the given data, and a success message should be printed
+    """
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -38,6 +43,11 @@ def test_creation_successful(monkey_token_check_correct_sales, fake_contract, ca
 def test_creation_with_optional_arguments_successful(
     monkey_token_check_correct_sales, fake_contract, fake_collaborator_support, capsys
 ):
+    """
+    GIVEN a sales collaborator with the correct token, an existing contract, and valid event data including optional arguments
+    WHEN the create() function is called to create an event
+    THEN the event should be created with the given data, including optional arguments, and a success message should be printed
+    """
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -73,6 +83,11 @@ def test_creation_with_optional_arguments_successful(
 
 
 def test_contract_not_found(monkey_token_check_correct_sales, fake_contract, capsys):
+    """
+    GIVEN a sales collaborator with the correct token and non-existing contract ID, and valid event data
+    WHEN the create() function is called to create an event
+    THEN the function should raise an exit error, and an error message should indicate that a valid contract ID is required
+    """
     contract = -100
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -97,6 +112,11 @@ def test_contract_not_found(monkey_token_check_correct_sales, fake_contract, cap
 
 
 def test_support_not_found(monkey_token_check_correct_sales, fake_contract, capsys):
+    """
+    GIVEN a sales collaborator with the correct token, an existing contract, and valid event data including an invalid support ID
+    WHEN the create() function is called to create an event
+    THEN the function should raise an exit error, and an error message should indicate that a valid support ID is required
+    """
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -125,6 +145,11 @@ def test_support_not_found(monkey_token_check_correct_sales, fake_contract, caps
 def test_creation_fails_with_wrong_salesman(
     monkey_token_check_correct_sales_plankton, fake_contract, capsys
 ):
+    """
+    GIVEN a sales collaborator with the incorrect sales token, an existing contract, and valid event data
+    WHEN the create() function is called to create an event
+    THEN the function should raise an exit error, and an error message should indicate that the action is restricted
+    """
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -150,6 +175,11 @@ def test_creation_fails_with_wrong_salesman(
 def test_creation_fails_with_unsigned_contract(
     monkey_token_check_correct_sales, fake_contract_unsigned, capsys
 ):
+    """
+    GIVEN a sales collaborator with the correct token, an existing unsigned contract, and valid event data
+    WHEN the create() function is called to create an event
+    THEN the function should raise an exit error, and an error message should indicate that events cannot be created for unsigned contracts
+    """
     contract = fake_contract_unsigned.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -176,6 +206,11 @@ def test_creation_fails_with_unsigned_contract(
 
 
 def test_creation_not_authorized(monkey_token_check_management, fake_contract, capsys):
+    """
+    GIVEN a management collaborator with the correct token, an existing contract, and valid event data
+    WHEN the create() function is called to create an event
+    THEN the function should raise an exit error, and an error message should indicate that the action is restricted
+    """
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"
@@ -202,6 +237,11 @@ def test_creation_not_authorized(monkey_token_check_management, fake_contract, c
 def test_creation_fails_if_not_authenticated(
     monkey_token_check_false, fake_contract, capsys
 ):
+    """
+    GIVEN an unauthenticated collaborator, an existing contract, and valid event data
+    WHEN the create() function is called to create an event
+    THEN the function should raise an exit error, and an error message should indicate that authentication is required
+    """
     contract = fake_contract.id
     start_date = "2024-05-20 14:00"
     end_date = "2024-05-20 22:00"

@@ -22,6 +22,7 @@ app = typer.Typer()
 
 
 def _create_contracts_table():
+    """Creates a table structure for displaying contract information."""
     table = Table(title="Tableau des contrats")
     table.add_column("[ID]", justify="center", no_wrap=True, style="cyan")
     table.add_column("[Client]", justify="center", no_wrap=True, style="orange_red1")
@@ -41,6 +42,7 @@ def _create_contracts_table():
 
 
 def _add_rows_in_contracts_table(contract, table):
+    """Populates rows to the contracts table."""
     table.add_row(
         f"{contract.id}",
         f"{contract.client.first_name} {contract.client.name}",
@@ -53,6 +55,7 @@ def _add_rows_in_contracts_table(contract, table):
 
 
 def _print_table(queryset):
+    """Prints the contracts list table."""
     table = _create_contracts_table()
 
     for contract in queryset:

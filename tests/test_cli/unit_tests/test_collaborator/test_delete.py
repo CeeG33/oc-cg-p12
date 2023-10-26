@@ -15,6 +15,11 @@ def test_collaborator_delete_successful(
     fake_collaborator_management,
     capsys,
 ):
+    """
+    GIVEN a management collaborator with the correct token and an existing management collaborator,
+    WHEN the delete() function is called to delete the collaborator,
+    THEN the collaborator should be deleted successfully, and a success message should be printed.
+    """
     collaborator = fake_collaborator_management
     delete(collaborator.id)
 
@@ -32,6 +37,11 @@ def test_collaborator_delete_successful(
 def test_collaborator_deletion_fails_with_wrong_collaborator_id(
     monkey_token_check_management, capsys
 ):
+    """
+    GIVEN a management collaborator with the correct token,
+    WHEN the delete() function is called to delete a collaborator with an invalid ID,
+    THEN an Exit exception should be raised, and an error message indicating that no collaborator was found with the given ID should be printed.
+    """
     fake_id = -100
 
     delete(fake_id)
@@ -44,6 +54,11 @@ def test_collaborator_deletion_fails_with_wrong_collaborator_id(
 def test_collaborator_deletion_not_authorized(
     monkey_token_check_correct_sales, fake_collaborator_management, capsys
 ):
+    """
+    GIVEN a sales collaborator with the correct token and an existing management collaborator,
+    WHEN the delete() function is called to delete the collaborator,
+    THEN an Exit exception should be raised, and an error message should indicate a restricted action.
+    """
     collaborator = fake_collaborator_management
 
     with pytest.raises(Exit):
@@ -57,6 +72,11 @@ def test_collaborator_deletion_not_authorized(
 def test_collaborator_deletion_fails_without_authentication(
     monkey_token_check_false, fake_collaborator_management, capsys
 ):
+    """
+    GIVEN an unauthenticated user and an existing management collaborator,
+    WHEN the delete() function is called to delete the collaborator,
+    THEN an Exit exception should be raised, and an error message should prompt the user to authenticate and try again.
+    """
     collaborator = fake_collaborator_management
 
     with pytest.raises(Exit):

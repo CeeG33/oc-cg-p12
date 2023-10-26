@@ -9,6 +9,8 @@ ph = PasswordHasher()
 
 
 class Collaborator(BaseModel):
+    """Represents a collaborator (user) in the CRM system."""
+
     first_name = CharField(max_length=25)
     name = CharField(max_length=25)
     email = CharField(max_length=50, unique=True)
@@ -16,6 +18,12 @@ class Collaborator(BaseModel):
     department = ForeignKeyField(Department, backref="department")
 
     def save(self, *args, **kwargs):
+        """
+        Saves the collaborator's information with validation checks.
+
+        Raises:
+            ValueError: If required fields are missing or validation checks fail.
+        """
         if not self.__data__:
             raise ValueError(
                 "Erreur : Vous n'avez pas renseigné les détails du collaborateur."
@@ -28,6 +36,12 @@ class Collaborator(BaseModel):
         super().save(*args, **kwargs)
 
     def _validate_name(self):
+        """
+        Validates the first name and last name.
+
+        Raises:
+            ValueError: If the first name or last name format is incorrect.
+        """
         pattern = r"^[a-zA-ZÀ-ÿ-]+$"
         if not re.match(pattern, self.first_name):
             raise ValueError(
@@ -40,6 +54,12 @@ class Collaborator(BaseModel):
             )
 
     def _validate_email(self):
+        """
+        Validates the email address.
+
+        Raises:
+            ValueError: If the email format is incorrect.
+        """
         pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
         if not re.match(pattern, self.email):
             raise ValueError(
@@ -47,6 +67,7 @@ class Collaborator(BaseModel):
             )
 
     def get_data(self):
+        """Returns a dictionnary with the collaborator's information."""
         collaborator_data = {
             "collaborator_id": f"{self.id}",
             "email": f"{self.email}",

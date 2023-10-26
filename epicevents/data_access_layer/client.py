@@ -7,6 +7,8 @@ from .collaborator import Collaborator
 
 
 class Client(BaseModel):
+    """Represents a client in the CRM system."""
+
     first_name = CharField(max_length=25)
     name = CharField(max_length=25)
     email = CharField(max_length=50, unique=True, null=True)
@@ -19,6 +21,12 @@ class Client(BaseModel):
     )
 
     def save(self, *args, **kwargs):
+        """
+        Saves the client's information with validation checks.
+
+        Raises:
+            ValueError: If required fields are missing or validation checks fail.
+        """
         if not (self.first_name and self.name):
             raise ValueError(
                 "Erreur : Vous n'avez pas renseigné les détails du client."
@@ -39,6 +47,12 @@ class Client(BaseModel):
         super().save(*args, **kwargs)
 
     def _validate_name(self):
+        """
+        Validates the first name and last name.
+
+        Raises:
+            ValueError: If the first name or last name format is incorrect.
+        """
         pattern = r"^[a-zA-ZÀ-ÿ-]+$"
         if not re.match(pattern, self.first_name):
             raise ValueError(
@@ -51,6 +65,12 @@ class Client(BaseModel):
             )
 
     def _validate_email(self):
+        """
+        Validates the email address.
+
+        Raises:
+            ValueError: If the email format is incorrect.
+        """
         pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
         if not re.match(pattern, self.email):
             raise ValueError(
@@ -58,6 +78,12 @@ class Client(BaseModel):
             )
 
     def _validate_date(self):
+        """
+        Validates date fields.
+
+        Raises:
+            ValueError: If the date format is incorrect.
+        """
         pattern = r"^\d{4}-\d{2}-\d{2}$"
         pattern2 = r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"
         if not (

@@ -7,6 +7,8 @@ from .collaborator import Collaborator
 
 
 class Event(BaseModel):
+    """Represents an event in the CRM system."""
+
     contract = ForeignKeyField(Contract, backref="contract")
     start_date = DateTimeField()
     end_date = DateTimeField()
@@ -18,6 +20,12 @@ class Event(BaseModel):
     )
 
     def save(self, *args, **kwargs):
+        """
+        Saves the event's information with validation checks.
+
+        Raises:
+            ValueError: If required fields are missing or validation checks fail.
+        """
         if not (self.contract and self.start_date and self.end_date and self.location):
             raise ValueError("Erreur : Veuillez renseigner les détails de l'évènement.")
 
@@ -41,12 +49,24 @@ class Event(BaseModel):
         super().save(*args, **kwargs)
 
     def _validate_date(self):
+        """
+        Validates the date.
+
+        Raises:
+            ValueError: If the date format is incorrect.
+        """
         pattern = r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"
         pattern2 = r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$"
 
         if not (
-            ((re.match(pattern, str(self.start_date))) or (re.match(pattern2, str(self.start_date))))
-            and ((re.match(pattern, str(self.end_date))) or (re.match(pattern2, str(self.end_date))))
+            (
+                (re.match(pattern, str(self.start_date)))
+                or (re.match(pattern2, str(self.start_date)))
+            )
+            and (
+                (re.match(pattern, str(self.end_date)))
+                or (re.match(pattern2, str(self.end_date)))
+            )
         ):
             raise ValueError(
                 "Erreur : Veuillez entrer une date et une heure valides (Exemple : 2023-02-05 20:30)"

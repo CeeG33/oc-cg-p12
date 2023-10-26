@@ -9,6 +9,12 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 def test_creation_successful(
     monkey_token_check_correct_sales, fake_company, fake_collaborator_sales, capsys
 ):
+    """
+    Given a valid sales collaborator token, a fake company, and a fake sales collaborator,
+    When a client is created with specific details,
+    Then the client should be created with the expected details, including the default creation date and last update date.
+    And the success message should be displayed in the captured output.
+    """
     first_name = "Capitaine"
     name = "Crabs"
     email = "capitaine.crabs@ocean.com"
@@ -37,6 +43,12 @@ def test_creation_successful(
 def test_creation_with_optional_arguments_successful(
     monkey_token_check_correct_sales, fake_company, fake_collaborator_sales, capsys
 ):
+    """
+    Given a valid sales collaborator token, a fake company, and a fake sales collaborator,
+    When a client is created with specific details including optional creation and last update dates,
+    Then the client should be created with the expected details, including the provided creation and last update dates.
+    And the success message should be displayed in the captured output.
+    """
     first_name = "Capitaine"
     name = "Crabs"
     email = "capitaine.crabs@ocean.com"
@@ -73,6 +85,12 @@ def test_creation_with_optional_arguments_successful(
 
 
 def test_company_not_found(monkey_token_check_correct_sales, capsys):
+    """
+    Given a valid sales collaborator token,
+    When a client is created with an invalid company ID,
+    Then an exit should be raised with an error message in the captured output.
+    And no client with the same company ID should be found.
+    """
     first_name = "Capitaine"
     name = "Crabs"
     email = "capitaine.crabs@ocean.com"
@@ -103,6 +121,12 @@ def test_company_not_found(monkey_token_check_correct_sales, capsys):
 def test_creation_not_authorized(
     monkey_token_check_support_gargamel, fake_company, capsys
 ):
+    """
+    Given a valid support collaborator token and a fake company,
+    When a client is created,
+    Then an exit should be raised with an error message in the captured output.
+    And no client should be created.
+    """
     first_name = "Capitaine"
     name = "Crabs"
     email = "capitaine.crabs@ocean.com"
@@ -125,6 +149,12 @@ def test_creation_not_authorized(
 def test_creation_fails_if_not_authenticated(
     monkey_token_check_false, fake_company, capsys
 ):
+    """
+    Given a fake token and a fake company,
+    When a client is created,
+    Then an exit should be raised with an error message in the captured output.
+    And no client should be created.
+    """
     first_name = "Capitaine"
     name = "Crabs"
     email = "capitaine.crabs@ocean.com"

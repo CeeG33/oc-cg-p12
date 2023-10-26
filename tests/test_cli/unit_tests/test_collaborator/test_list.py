@@ -11,6 +11,11 @@ def test_list_successful(
     fake_collaborator_management,
     capsys,
 ):
+    """
+    GIVEN a management collaborator with a management department
+    WHEN the list function is called
+    THEN it should display a list of collaborators, and the output should contain "[ID]".
+    """
     list()
 
     captured = capsys.readouterr()
@@ -19,6 +24,11 @@ def test_list_successful(
 
 
 def test_list_not_allowed(monkey_token_check_correct_sales, capsys):
+    """
+    GIVEN a sales collaborator
+    WHEN the list function is called
+    THEN an Exit exception should be raised, and an error message should indicate a restricted action.
+    """
     with pytest.raises(Exit):
         list()
 
@@ -28,6 +38,11 @@ def test_list_not_allowed(monkey_token_check_correct_sales, capsys):
 
 
 def test_list_fails_with_wrong_token(monkey_token_check_false, capsys):
+    """
+    GIVEN an unauthenticated state (wrong token)
+    WHEN the list function is called
+    THEN an Exit exception should be raised, and an error message should prompt the user to authenticate and try again.
+    """
     with pytest.raises(Exit):
         list()
 
