@@ -4,7 +4,7 @@ from epicevents.data_access_layer.collaborator import Collaborator
 
 
 def test_collaborator_CRUD_successful(
-    monkey_token_check_management, fake_department_management, capsys
+    monkey_token_check_management, fake_department_management, monkey_capture_message_collaborator, capsys
 ):
     collaborator.create(
         first_name="Test",

@@ -4,7 +4,7 @@ from epicevents.data_access_layer.contract import Contract
 
 
 def test_contract_create_read_and_update_successful(
-    monkey_token_check_management, fake_collaborator_sales, fake_client, capsys
+    monkey_token_check_management, fake_collaborator_sales, monkey_capture_message_contract, fake_client, capsys
 ):
     contract.create(
         client=fake_client.id,

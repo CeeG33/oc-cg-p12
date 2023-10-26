@@ -1,4 +1,5 @@
 import typer
+import sentry_sdk
 from .cli.client import app as app_client
 from .cli.collaborator import app as app_collaborator
 from .cli.contract import app as app_contract
@@ -12,4 +13,7 @@ app.add_typer(app_contract, name="contracts", help="Manages contracts.")
 app.add_typer(app_event, name="events", help="Manages events.")
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
