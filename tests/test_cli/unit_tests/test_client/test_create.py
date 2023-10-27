@@ -3,7 +3,6 @@ from typer import Exit
 from datetime import datetime
 from epicevents.data_access_layer.client import Client
 from epicevents.cli.client import create
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_creation_successful(

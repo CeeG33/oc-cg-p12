@@ -1,5 +1,5 @@
-import pytest, os
-from dotenv import set_key, get_key
+import pytest
+from dotenv import set_key
 from epicevents.cli.collaborator import _read_token
 
 

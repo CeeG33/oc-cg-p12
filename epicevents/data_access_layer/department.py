@@ -1,6 +1,5 @@
 import re
 from peewee import *
-from playhouse.migrate import migrate
 from .database import BaseModel
 
 

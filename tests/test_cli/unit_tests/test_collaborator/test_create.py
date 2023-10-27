@@ -1,8 +1,6 @@
 import pytest
 from typer import Exit
-from epicevents.data_access_layer.collaborator import Collaborator
-from epicevents.cli.collaborator import create, _memorize_token, _verify_token
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+from epicevents.cli.collaborator import create
 
 
 def test_creation_successful(

@@ -1,7 +1,6 @@
 import pytest
 from typer import Exit
 from epicevents.cli.contract import filter
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_filter_signed_successful(

@@ -1,4 +1,4 @@
-import pytest, os
+import pytest
 from dotenv import get_key
 from epicevents.cli.collaborator import _memorize_token
 

@@ -3,7 +3,7 @@ from rich import print
 from rich.console import Console
 from rich.table import Table
 from peewee import DoesNotExist
-from typing_extensions import Annotated, Optional
+from typing_extensions import Annotated
 from epicevents.data_access_layer.event import Event
 from epicevents.data_access_layer.collaborator import Collaborator
 from epicevents.data_access_layer.contract import Contract
@@ -13,7 +13,6 @@ from epicevents.cli.collaborator import (
     SALES_DEPARTMENT_ID,
     SUPPORT_DEPARTMENT_ID,
 )
-from .collaborator import _verify_token
 
 
 app = typer.Typer()

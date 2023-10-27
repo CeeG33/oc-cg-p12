@@ -1,8 +1,6 @@
 import pytest
 from typer import Exit
-from epicevents.cli.collaborator import _memorize_token
 from epicevents.cli.contract import list
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_list_successful(monkey_token_check_management, fake_contract, capsys):

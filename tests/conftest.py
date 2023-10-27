@@ -1,8 +1,8 @@
-import pytest, os, jwt
-import sentry_sdk
+import pytest
+import jwt
 from datetime import datetime, timedelta
-from peewee import PostgresqlDatabase, SqliteDatabase
-from dotenv import load_dotenv, find_dotenv
+from peewee import SqliteDatabase
+from dotenv import load_dotenv
 from epicevents.data_access_layer import (
     client,
     collaborator,

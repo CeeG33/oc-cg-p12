@@ -1,6 +1,5 @@
 import re
 from peewee import *
-from datetime import date, datetime
 from .database import BaseModel
 from .contract import Contract
 from .collaborator import Collaborator

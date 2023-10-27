@@ -1,10 +1,7 @@
 import pytest
-from datetime import datetime
 from typer import Exit
-from peewee import DoesNotExist
 from epicevents.data_access_layer.event import Event
 from epicevents.cli.event import update
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_contract_update_successful(

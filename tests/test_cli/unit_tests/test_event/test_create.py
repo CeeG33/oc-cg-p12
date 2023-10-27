@@ -1,9 +1,7 @@
 import pytest
 from typer import Exit
-from datetime import datetime
 from epicevents.data_access_layer.event import Event
 from epicevents.cli.event import create
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_creation_successful(monkey_token_check_correct_sales, fake_contract, capsys):

@@ -1,7 +1,6 @@
 import pytest
 from typer import Exit
 from epicevents.cli.event import filter
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 
 def test_filter_support_with_management_collaborator_successful(

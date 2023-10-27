@@ -1,7 +1,8 @@
-import pytest, jwt
+import pytest
+import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from epicevents.cli import collaborator
-from epicevents.cli.collaborator import _verify_token, _memorize_token
+from epicevents.cli.collaborator import _verify_token
 
 
 def test_verify_token(monkey_dotenv, monkey_read_token_correct, valid_token):

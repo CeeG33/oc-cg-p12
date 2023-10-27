@@ -1,6 +1,5 @@
 import pytest
-from datetime import datetime, timedelta, date
-from peewee import IntegrityError, DataError, DoesNotExist
+from peewee import DoesNotExist
 from epicevents.data_access_layer.event import Event
 
 

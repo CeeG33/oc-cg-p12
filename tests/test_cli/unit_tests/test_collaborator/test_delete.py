@@ -1,10 +1,9 @@
 import pytest
 from typer import Exit
 from argon2 import PasswordHasher
-from peewee import DoesNotExist
 from epicevents.data_access_layer.collaborator import Collaborator
-from epicevents.cli.collaborator import delete, _memorize_token
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+from epicevents.cli.collaborator import delete
+
 
 ph = PasswordHasher()
 

@@ -1,9 +1,7 @@
 import pytest
 from datetime import datetime, timedelta, timezone
 from peewee import IntegrityError
-from argon2 import PasswordHasher
 from epicevents.data_access_layer.collaborator import Collaborator
-from epicevents.data_access_layer.department import Department
 from epicevents.cli.collaborator import MANAGEMENT_DEPARTMENT_ID
 
 

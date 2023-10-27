@@ -1,11 +1,9 @@
 import re
-import datetime as dt
-from datetime import date, datetime
+from datetime import datetime
 from peewee import *
 from .database import BaseModel
 from .client import Client
 from .collaborator import Collaborator
-from .department import Department
 
 
 class Contract(BaseModel):

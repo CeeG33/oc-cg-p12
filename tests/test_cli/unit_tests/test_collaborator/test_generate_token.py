@@ -1,4 +1,5 @@
-import pytest, jwt
+import pytest
+import jwt
 from epicevents.cli import collaborator
 from epicevents.cli.collaborator import _generate_token
 

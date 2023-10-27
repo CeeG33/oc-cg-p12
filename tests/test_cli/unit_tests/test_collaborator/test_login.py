@@ -1,4 +1,4 @@
-import pytest, os
+import pytest
 from click.exceptions import Exit
 from epicevents.cli.collaborator import login
 

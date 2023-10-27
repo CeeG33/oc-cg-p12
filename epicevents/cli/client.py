@@ -1,20 +1,14 @@
-import os, typer
+import typer
 from rich import print
 from rich.console import Console
 from rich.table import Table
 from peewee import DoesNotExist
 from datetime import datetime
 from typing_extensions import Annotated
-from dotenv import load_dotenv
 from epicevents.data_access_layer.client import Client
 from epicevents.data_access_layer.company import Company
 from epicevents.cli import collaborator as clicollaborator
-from epicevents.cli.collaborator import (
-    MANAGEMENT_DEPARTMENT_ID,
-    SALES_DEPARTMENT_ID,
-    SUPPORT_DEPARTMENT_ID,
-)
-from .collaborator import _verify_token
+from epicevents.cli.collaborator import SALES_DEPARTMENT_ID
 
 
 app = typer.Typer()

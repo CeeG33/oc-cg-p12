@@ -119,7 +119,7 @@ def login(
     if collaborator:
         if hasattr(collaborator, "password"):
             try:
-                password_check = ph.verify(collaborator.password, password)
+                ph.verify(collaborator.password, password)
             except VerifyMismatchError:
                 print("Nom d'utilisateur ou mot de passe incorrect.")
                 raise typer.Exit(code=1)

@@ -1,5 +1,4 @@
 import pytest
-from datetime import datetime
 from epicevents.cli import event
 from epicevents.data_access_layer.event import Event
 
