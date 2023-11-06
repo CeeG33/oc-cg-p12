@@ -1,5 +1,6 @@
 import typer
 import sentry_sdk
+from rich import print
 from .cli.client import app as app_client
 from .cli.collaborator import app as app_collaborator
 from .cli.contract import app as app_contract
@@ -16,4 +17,5 @@ if __name__ == "__main__":
     try:
         app()
     except Exception as e:
+        print(e)
         sentry_sdk.capture_exception(e)

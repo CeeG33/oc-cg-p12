@@ -28,18 +28,18 @@ class Contract(BaseModel):
         if not self.client:
             raise ValueError("Erreur : Veuillez renseigner les détails du contrat.")
 
-        if not isinstance(self.collaborator.id, int):
+        if not isinstance(self.collaborator, Collaborator):
             raise ValueError(
                 "Erreur : Veuillez entrer un identifiant de collaborateur valide."
             )
 
-        if not isinstance(self.client.id, int):
+        if not isinstance(self.client, Client):
             raise ValueError("Erreur : Veuillez entrer un identifiant client valide.")
 
-        if not isinstance(self.total_sum, (int, float)):
+        if not isinstance(float(str(self.total_sum)), float) or not float(self.total_sum) >= 1:
             raise ValueError("Erreur : Veuillez entrer un montant valide.")
 
-        if self.amount_due != None and not isinstance(self.amount_due, (int, float)):
+        if self.amount_due != None and not (isinstance(float(str(self.amount_due)), float) or float(self.amount_due) >= 0):
             raise ValueError("Erreur : Veuillez entrer un montant valide.")
 
         if self.signed not in ("True", "False", True, False):

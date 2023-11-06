@@ -28,7 +28,7 @@ class Event(BaseModel):
         if not (self.contract and self.start_date and self.end_date and self.location):
             raise ValueError("Erreur : Veuillez renseigner les détails de l'évènement.")
 
-        if not isinstance(self.contract, int) and self.contract.id <= 0:
+        if not isinstance(self.contract, Contract):
             raise ValueError(
                 "Erreur : Veuillez entrer un identifiant de contrat valide."
             )
@@ -38,7 +38,7 @@ class Event(BaseModel):
                 "Erreur : Veuillez entrer un identifiant de collaborateur valide."
             )
 
-        if not isinstance(self.attendees, int) or int(self.attendees) <= 1:
+        if not str(self.attendees).isdigit() or int(self.attendees) <= 1:
             raise ValueError(
                 "Erreur : Veuillez entrer un nombre de participant supérieur à 1."
             )

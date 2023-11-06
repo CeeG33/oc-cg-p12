@@ -31,11 +31,11 @@ class Client(BaseModel):
             raise ValueError(
                 "Erreur : Vous n'avez pas renseigné les détails du client."
             )
-        if not isinstance(self.collaborator.id, int):
+        if not isinstance(self.collaborator, Collaborator):
             raise ValueError(
                 "Erreur : Veuillez entrer un identifiant de collaborateur valide."
             )
-        if not isinstance(self.company.id, int):
+        if not isinstance(self.company, Company):
             raise ValueError(
                 "Erreur : Veuillez entrer un identifiant d'entreprise valide."
             )
